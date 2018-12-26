@@ -9,6 +9,8 @@ lazy val projectName = "zeklin"
 
 // ### Dependencies ###
 
+lazy val squants = "org.typelevel" %% "squants" % "1.4.0"
+
 lazy val circe = ((version: String) =>
   Seq(
     "io.circe" %% "circe-core"    % version,
@@ -17,9 +19,9 @@ lazy val circe = ((version: String) =>
   ))("0.11.0")
 
 lazy val testKitLibs = Seq(
-  "org.scalacheck" %% "scalacheck" % "1.14.0",
-  "org.scalactic"  %% "scalactic"  % "3.0.5",
-  "org.scalatest"  %% "scalatest"  % "3.0.5",
+  "org.scalacheck"   %% "scalacheck"     % "1.14.0",
+  "org.scalactic"    %% "scalactic"      % "3.0.5",
+  "org.scalatest"    %% "scalatest"      % "3.0.5",
   "com.ironcorelabs" %% "cats-scalatest" % "2.4.0",
 ).map(_ % Test)
 
@@ -43,7 +45,9 @@ lazy val `json-parser` =
   project
     .settings(moduleName := s"$projectName-json-parser")
     .settings(
-      libraryDependencies ++= Seq() ++ circe ++ testKitLibs
+      libraryDependencies ++= Seq(
+        squants,
+      ) ++ circe ++ testKitLibs
     )
 
 // ### Commons ###

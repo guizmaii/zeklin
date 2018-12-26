@@ -83,7 +83,7 @@ object JmhJsonResultParser {
   import JmhJsonResultAST._
   import io.circe.parser._
 
-  def parse(string: String): ValidatedNel[circe.Error, Array[JmhResultAST]] =
+  final def parse(string: String): ValidatedNel[circe.Error, Array[JmhResultAST]] =
     decodeAccumulating[Array[JmhResultAST]](string)
 
 }
