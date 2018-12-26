@@ -17,13 +17,14 @@ object ComputationSpeed extends Dimension[ComputationSpeed] {
   override final val primaryUnit: UnitOfMeasure[ComputationSpeed] with PrimaryUnit = OpsPerSecond
   override final val siUnit: UnitOfMeasure[ComputationSpeed] with SiUnit           = OpsPerSecond
   override final val units: Set[UnitOfMeasure[ComputationSpeed]] =
-    Set(OpsPerSecond, OpsPerMillisecond)
+    Set(OpsPerSecond, OpsPerMilli, OpsPerNano)
 }
 
 object ComputationSpeedConversions {
   implicit final class ComputationSpeedOps[N](private val n: N) extends AnyVal {
     final def `ops/s`(implicit N: Numeric[N]): ComputationSpeed  = ComputationSpeed(n, OpsPerSecond)
-    final def `ops/ms`(implicit N: Numeric[N]): ComputationSpeed = ComputationSpeed(n, OpsPerMillisecond)
+    final def `ops/ms`(implicit N: Numeric[N]): ComputationSpeed = ComputationSpeed(n, OpsPerMilli)
+    final def `ops/ns`(implicit N: Numeric[N]): ComputationSpeed = ComputationSpeed(n, OpsPerNano)
   }
 }
 
@@ -35,7 +36,12 @@ final case object OpsPerSecond extends ComputationSpeedUnit with PrimaryUnit wit
   override final val symbol: String = "ops/s"
 }
 
-final case object OpsPerMillisecond extends ComputationSpeedUnit {
+final case object OpsPerMilli extends ComputationSpeedUnit {
   override final val symbol: String                     = "ops/ms"
   override protected final val conversionFactor: Double = MetricSystem.Kilo
+}
+
+final case object OpsPerNano extends ComputationSpeedUnit {
+  override final val symbol: String                     = "ops/ns"
+  override protected final val conversionFactor: Double = MetricSystem.Giga
 }
