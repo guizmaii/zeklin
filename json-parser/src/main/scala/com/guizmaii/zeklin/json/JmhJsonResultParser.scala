@@ -8,9 +8,9 @@ object JmhJsonResultAST {
   import io.circe.generic.semiauto._
 
   final case class Params(
-      heightCount: String,
-      lengthCount: String,
-      widthCount: String
+      heightCount: Int,
+      lengthCount: Int,
+      widthCount: Int
   )
 
   final case class ScorePercentiles(
