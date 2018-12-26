@@ -14,25 +14,25 @@ object JmhJsonResultAST {
   )
 
   final case class ScorePercentiles(
-      `0.0`: Double,
-      `50.0`: Double,
-      `90.0`: Double,
-      `95.0`: Double,
-      `99.0`: Double,
-      `99.9`: Double,
-      `99.99`: Double,
-      `99.999`: Double,
-      `99.9999`: Double,
-      `100.0`: Double
+      `0.0`: ComputationSpeed,
+      `50.0`: ComputationSpeed,
+      `90.0`: ComputationSpeed,
+      `95.0`: ComputationSpeed,
+      `99.0`: ComputationSpeed,
+      `99.9`: ComputationSpeed,
+      `99.99`: ComputationSpeed,
+      `99.999`: ComputationSpeed,
+      `99.9999`: ComputationSpeed,
+      `100.0`: ComputationSpeed
   )
 
   final case class Score(
-      score: Double,
-      scoreError: Double,
-      scoreConfidence: Array[Double],
+      score: ComputationSpeed,
+      scoreError: ComputationSpeed,
+      scoreConfidence: Array[ComputationSpeed],
       scorePercentiles: ScorePercentiles,
-      scoreUnit: String,
-      rawData: Array[Array[Double]]
+      scoreUnit: ComputationSpeedUnit,
+      rawData: Array[Array[ComputationSpeed]]
   )
 
   final case class JmhResultAST(
@@ -59,21 +59,50 @@ object JmhJsonResultAST {
 
   object Params {
     implicit final lazy val decoder: Decoder[Params] = deriveDecoder[Params]
-    implicit final lazy val encoder: Encoder[Params] = deriveEncoder[Params]
-  }
-
-  object ScorePercentiles {
-    implicit final lazy val decoder: Decoder[ScorePercentiles] = deriveDecoder[ScorePercentiles]
-    implicit final lazy val encoder: Encoder[ScorePercentiles] = deriveEncoder[ScorePercentiles]
   }
 
   object Score {
-    implicit final lazy val decoder: Decoder[Score] = deriveDecoder[Score]
-    implicit final lazy val encoder: Encoder[Score] = deriveEncoder[Score]
+    implicit final lazy val decoder: Decoder[Score] = (c: HCursor) =>
+      for {
+        score           <- c.downField("score").as[Double]
+        scoreError      <- c.downField("scoreError").as[Double]
+        scoreConfidence <- c.downField("scoreConfidence").as[Array[Double]]
+        cc = c.downField("scorePercentiles")
+        `0`       <- cc.downField("0.0").as[Double]
+        `50`      <- cc.downField("50.0").as[Double]
+        `90`      <- cc.downField("90.0").as[Double]
+        `95`      <- cc.downField("95.0").as[Double]
+        `99`      <- cc.downField("99.0").as[Double]
+        `99.9`    <- cc.downField("99.9").as[Double]
+        `99.99`   <- cc.downField("99.99").as[Double]
+        `99.999`  <- cc.downField("99.999").as[Double]
+        `99.9999` <- cc.downField("99.9999").as[Double]
+        `100`     <- cc.downField("100.0").as[Double]
+        unit      <- c.downField("scoreUnit").as[ComputationSpeedUnit]
+        rawData   <- c.downField("rawData").as[Array[Array[Double]]]
+      } yield
+        Score(
+          score = unit.apply(score),
+          scoreError = unit.apply(scoreError),
+          scoreConfidence = scoreConfidence.map((d: Double) => unit.apply(d)), // Without the `Double` type annotation, scalac doesn't infer it...
+          scorePercentiles = ScorePercentiles(
+            `0.0` = unit.apply(`0`),
+            `50.0` = unit.apply(`50`),
+            `90.0` = unit.apply(`90`),
+            `95.0` = unit.apply(`95`),
+            `99.0` = unit.apply(`99`),
+            `99.9` = unit.apply(`99.9`),
+            `99.99` = unit.apply(`99.99`),
+            `99.999` = unit.apply(`99.999`),
+            `99.9999` = unit.apply(`99.9999`),
+            `100.0` = unit.apply(`100`)
+          ),
+          scoreUnit = unit,
+          rawData = rawData.map(_.map((d: Double) => unit.apply(d))) // Without the `Double` type annotation, scalac doesn't infer it...
+        )
   }
 
   object JmhResultAST {
-    implicit final lazy val encoder: Encoder[JmhResultAST] = deriveEncoder[JmhResultAST]
     implicit final lazy val decoder: Decoder[JmhResultAST] = deriveDecoder[JmhResultAST]
   }
 }
