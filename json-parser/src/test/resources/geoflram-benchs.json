@@ -1,0 +1,276 @@
+[
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.colisweb.geoflram.benchmark.FindByLatitudeLongitudeBenchmark.firstCommuneOfTheList",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 2,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_192",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.192-b12",
+        "warmupIterations" : 10,
+        "warmupTime" : "2000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "2000 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 14243.645642465039,
+            "scoreError" : 575.4859073014339,
+            "scoreConfidence" : [
+                13668.159735163605,
+                14819.131549766473
+            ],
+            "scorePercentiles" : {
+                "0.0" : 13395.642630437113,
+                "50.0" : 14150.870106928422,
+                "90.0" : 15357.980907486522,
+                "95.0" : 15630.64539604059,
+                "99.0" : 15643.349735143835,
+                "99.9" : 15643.349735143835,
+                "99.99" : 15643.349735143835,
+                "99.999" : 15643.349735143835,
+                "99.9999" : 15643.349735143835,
+                "100.0" : 15643.349735143835
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    13740.854878533903,
+                    13513.723166507165,
+                    13546.915672015031,
+                    13395.642630437113,
+                    13671.48266836156,
+                    13661.332673334926,
+                    13720.472029410957,
+                    13777.255550817146,
+                    14744.088266462571,
+                    14198.186118127891
+                ],
+                [
+                    14288.30929503172,
+                    14813.442275796706,
+                    14632.875020990457,
+                    15643.349735143835,
+                    15389.262953078976,
+                    15076.442497154443,
+                    14103.55409572895,
+                    14835.532041121662,
+                    13881.161382945522,
+                    14239.029898300263
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.colisweb.geoflram.benchmark.FindByLatitudeLongitudeBenchmark.lastCommuneOfTheList",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 2,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_192",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.192-b12",
+        "warmupIterations" : 10,
+        "warmupTime" : "2000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "2000 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 5463.037628065579,
+            "scoreError" : 212.43920748217437,
+            "scoreConfidence" : [
+                5250.598420583405,
+                5675.476835547754
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5152.003915178847,
+                "50.0" : 5388.736895682105,
+                "90.0" : 5880.101123073636,
+                "95.0" : 5987.5555823617,
+                "99.0" : 5992.618943113773,
+                "99.9" : 5992.618943113773,
+                "99.99" : 5992.618943113773,
+                "99.999" : 5992.618943113773,
+                "99.9999" : 5992.618943113773,
+                "100.0" : 5992.618943113773
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    5233.396670054262,
+                    5152.003915178847,
+                    5296.550154002477,
+                    5321.755343850123,
+                    5275.45952535975,
+                    5314.293664764894,
+                    5278.328168244863,
+                    5302.893862792951,
+                    5413.52482596979,
+                    5222.461187500652
+                ],
+                [
+                    5992.618943113773,
+                    5618.841467112097,
+                    5412.720513804925,
+                    5410.691053133416,
+                    5778.845678085514,
+                    5891.351728072316,
+                    5749.728459102326,
+                    5487.292196609463,
+                    5741.2124663283485,
+                    5366.782738230794
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.colisweb.geoflram.benchmark.FindByLatitudeLongitudeBenchmark.middleOfTheList",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 2,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_192",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.192-b12",
+        "warmupIterations" : 10,
+        "warmupTime" : "2000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "2000 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 4582.841199588189,
+            "scoreError" : 274.96140023169113,
+            "scoreConfidence" : [
+                4307.879799356498,
+                4857.80259981988
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4288.92099348433,
+                "50.0" : 4451.878976165528,
+                "90.0" : 5050.68461666682,
+                "95.0" : 5324.366146785465,
+                "99.0" : 5338.742552046422,
+                "99.9" : 5338.742552046422,
+                "99.99" : 5338.742552046422,
+                "99.999" : 5338.742552046422,
+                "99.9999" : 5338.742552046422,
+                "100.0" : 5338.742552046422
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    4321.274775872517,
+                    4332.979447286376,
+                    4485.99762083983,
+                    4296.175503629569,
+                    4348.25130941192,
+                    4550.315581777779,
+                    4569.92184872991,
+                    4679.304638426393,
+                    5045.916145222513,
+                    4397.651148387777
+                ],
+                [
+                    5338.742552046422,
+                    4933.962509584637,
+                    4361.524502820797,
+                    4345.9823355166,
+                    4311.122950396697,
+                    4288.92099348433,
+                    4984.810822256322,
+                    5051.214446827299,
+                    4594.994527754888,
+                    4417.760331491225
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.colisweb.geoflram.benchmark.FindByLatitudeLongitudeBenchmark.notInTheList",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 2,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_192",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.192-b12",
+        "warmupIterations" : 10,
+        "warmupTime" : "2000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "2000 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 73.87191376163163,
+            "scoreError" : 6.0230957854910425,
+            "scoreConfidence" : [
+                67.8488179761406,
+                79.89500954712267
+            ],
+            "scorePercentiles" : {
+                "0.0" : 65.32372352606266,
+                "50.0" : 72.3273356501524,
+                "90.0" : 86.54116108319077,
+                "95.0" : 87.53293041821553,
+                "99.0" : 87.57908969071674,
+                "99.9" : 87.57908969071674,
+                "99.99" : 87.57908969071674,
+                "99.999" : 87.57908969071674,
+                "99.9999" : 87.57908969071674,
+                "100.0" : 87.57908969071674
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    65.53301876211052,
+                    65.32372352606266,
+                    65.93572357348138,
+                    80.91689775078306,
+                    86.6559042406924,
+                    67.67257663914341,
+                    85.50847266567615,
+                    68.40210882357958,
+                    76.78097113563642,
+                    80.08433737637792
+                ],
+                [
+                    68.15861052836807,
+                    73.76312049687354,
+                    71.97045467027753,
+                    72.68421663002728,
+                    71.23585323564252,
+                    71.78191995465602,
+                    72.85279558126965,
+                    71.3588671147095,
+                    87.57908969071674,
+                    73.23961283654843
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
