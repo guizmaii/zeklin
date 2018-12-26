@@ -21,7 +21,7 @@ object ComputationSpeed extends Dimension[ComputationSpeed] {
 }
 
 object ComputationSpeedConversions {
-  implicit final class ComputationSpeedOps[N](private val n: N) extends AnyVal {
+  implicit final class ComputationSpeedOps[N](private final val n: N) extends AnyVal {
     final def `ops/s`(implicit N: Numeric[N]): ComputationSpeed  = ComputationSpeed(n, OpsPerSecond)
     final def `ops/ms`(implicit N: Numeric[N]): ComputationSpeed = ComputationSpeed(n, OpsPerMilli)
     final def `ops/ns`(implicit N: Numeric[N]): ComputationSpeed = ComputationSpeed(n, OpsPerNano)
