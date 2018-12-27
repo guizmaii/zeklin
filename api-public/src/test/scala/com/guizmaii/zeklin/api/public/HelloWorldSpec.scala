@@ -12,12 +12,12 @@ class HelloWorldSpec extends FreeSpec with Matchers {
       retHelloWorld.status shouldBe Status.Ok
     }
     "return hello world" in {
-      retHelloWorld.as[String].unsafeRunSync() shouldBe "{\"message\":\"Hello, world\"}"
+      retHelloWorld.as[String].unsafeRunSync() shouldBe "{\"message\":\"Hello, You\"}"
     }
   }
 
   private[this] val retHelloWorld: Response[IO] = {
-    val getHW = Request[IO](Method.GET, Uri.uri("/hello/world"))
+    val getHW = Request[IO](Method.GET, Uri.uri("/hello/You"))
     new HelloWorldRoutes[IO].routes.orNotFound(getHW).unsafeRunSync()
   }
 

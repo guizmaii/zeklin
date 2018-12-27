@@ -8,7 +8,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 object HelloWorldServer extends IOApp {
   import cats.implicits._
 
-  def run(args: List[String]): IO[ExitCode] =
+  override final def run(args: List[String]): IO[ExitCode] =
     ServerStream.stream[IO].compile.drain.as(ExitCode.Success)
 }
 

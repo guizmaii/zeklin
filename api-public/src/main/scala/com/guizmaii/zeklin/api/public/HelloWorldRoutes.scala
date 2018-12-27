@@ -10,6 +10,6 @@ final class HelloWorldRoutes[F[_]: Sync] extends Http4sDsl[F] {
   final val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "hello" / name =>
-        Ok(Json.obj("message" -> Json.fromString(s"Hello, ${name}")))
+        Ok(Json.obj("message" -> Json.fromString(s"Hello, $name")))
     }
 }
