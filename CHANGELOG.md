@@ -6,5 +6,6 @@ More infos about this file : http://keepachangelog.com/
 
 ## [Unreleased] - no_due_date
 
+- **Init the `api` project with an http4s minimal project**
 - **Implement the JMH JSON parser**
 - **Init project**
