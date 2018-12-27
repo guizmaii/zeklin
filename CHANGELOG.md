@@ -6,4 +6,5 @@ More infos about this file : http://keepachangelog.com/
 
 ## [Unreleased] - no_due_date
 
+- **Implement the JMH JSON parser**
 - **Init project**
