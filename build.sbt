@@ -40,8 +40,8 @@ lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
     .settings(noPublishSettings: _*)
-    .aggregate(core, `json-parser`, api)
-    .dependsOn(core, `json-parser`, api)
+    .aggregate(core, `json-parser`, `api-public`)
+    .dependsOn(core, `json-parser`, `api-public`)
 
 lazy val core =
   project
@@ -50,9 +50,9 @@ lazy val core =
       libraryDependencies ++= Seq() ++ testKitLibs
     )
 
-lazy val api =
+lazy val `api-public` =
   project
-    .settings(moduleName := s"$projectName-api")
+    .settings(moduleName := s"$projectName-api-public")
     .settings(commonSettings: _*)
     .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6"))
     .settings(

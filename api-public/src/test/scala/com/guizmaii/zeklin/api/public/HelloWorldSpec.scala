@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.api
+package com.guizmaii.zeklin.api.public
 
 import cats.effect.IO
 import org.http4s._

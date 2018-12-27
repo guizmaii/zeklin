@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.api
+package com.guizmaii.zeklin.api.public
 
 import cats.effect.Sync
 import io.circe.Json

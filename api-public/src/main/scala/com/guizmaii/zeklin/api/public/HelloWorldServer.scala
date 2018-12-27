@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.api
+package com.guizmaii.zeklin.api.public
 
 import cats.effect._
 import org.http4s.HttpRoutes
