@@ -1,4 +1,5 @@
-package com.guizmaii.zeklin.json
+package com.guizmaii.zeklin.jmh.json
+
 import cats.data.ValidatedNel
 import io.circe
 

@@ -1,4 +1,5 @@
-package com.guizmaii.zeklin.json
+package com.guizmaii.zeklin.jmh.json
+
 import io.circe.{Decoder, Encoder, Json}
 import squants.{Dimension, MetricSystem, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
 

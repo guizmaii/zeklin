@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.json
+package com.guizmaii.zeklin.jmh.json
 
 import cats.scalatest.ValidatedMatchers
 import org.scalatest.{FlatSpec, Matchers}
