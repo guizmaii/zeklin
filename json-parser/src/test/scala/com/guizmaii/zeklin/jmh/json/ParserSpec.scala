@@ -19,6 +19,10 @@ class ParserSpec extends FlatSpec with Matchers with ValidatedMatchers {
     JmhJsonResultParser.parse(raw("geoflram-benchs.json")) should be(valid)
   }
 
+  it should "parse circe-benchs.json" in {
+    JmhJsonResultParser.parse(raw("circe-benchs.json")) should be(valid)
+  }
+
   it should "parse correctly the `ComputationSpeed`s from aaa-benchs.json" in {
     val res = JmhJsonResultParser.parse(raw("aaa-benchs.json")).valueOr(null)
 
