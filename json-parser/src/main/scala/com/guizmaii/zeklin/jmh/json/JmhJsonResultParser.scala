@@ -59,11 +59,11 @@ object JmhJsonResultAST {
   )
 
   object Params {
-    implicit final lazy val decoder: Decoder[Params] = deriveDecoder[Params]
+    implicit final val decoder: Decoder[Params] = deriveDecoder[Params]
   }
 
   object Score {
-    implicit final lazy val decoder: Decoder[Score] = (c: HCursor) =>
+    implicit final val decoder: Decoder[Score] = (c: HCursor) =>
       for {
         score           <- c.downField("score").as[Double]
         scoreError      <- c.downField("scoreError").as[Double]
@@ -104,7 +104,7 @@ object JmhJsonResultAST {
   }
 
   object JmhResultAST {
-    implicit final lazy val decoder: Decoder[JmhResultAST] = deriveDecoder[JmhResultAST]
+    implicit final val decoder: Decoder[JmhResultAST] = deriveDecoder[JmhResultAST]
   }
 }
 
