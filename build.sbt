@@ -65,6 +65,13 @@ lazy val `api-public` =
     .dependsOn(`json-parser`)
     .dependsOn(`test-kit` % Test)
 
+lazy val accounts =
+  project
+    .settings(moduleName := s"$projectName-accounts")
+    .settings(
+      libraryDependencies ++= Seq() ++ testKitLibs
+    )
+
 lazy val `json-parser` =
   project
     .settings(moduleName := s"$projectName-json-parser")
