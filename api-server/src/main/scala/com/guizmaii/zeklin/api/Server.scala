@@ -1,7 +1,8 @@
-package com.guizmaii.zeklin.api.publik
+package com.guizmaii.zeklin.api
 
 import cats.effect.{ConcurrentEffect, IOApp, Timer}
-import com.guizmaii.zeklin.api.publik.routes.{HelloWorldRoutes, UploadJmhResult}
+import com.guizmaii.zeklin.api.inner.routes.AccountApi
+import com.guizmaii.zeklin.api.outer.routes.{HelloWorldRoutes, UploadJmhResult}
 import fs2.Stream
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -25,6 +26,8 @@ final class Module[F[_]: ConcurrentEffect: Timer] {
 
   val publicApiRoutes: HttpRoutes[F] = new UploadJmhResult[F].routes
 
+  val privateApiRoutes: HttpRoutes[F] = new AccountApi[F].routes
+
 }
 
 /**
@@ -36,16 +39,20 @@ object Server extends IOApp {
   import org.http4s.implicits._
   import org.http4s.server.middleware._
 
-  private final def app[F[_]: ConcurrentEffect](ctx: Module[F]): HttpApp[F] =
+  private final def app[F[_]: ConcurrentEffect](ctx: Module[F]): HttpApp[F] = {
+    import ctx._
+
     Router(
-      "/"    -> ctx.helloWorldRoutes,
-      "/api" -> ctx.middlewares(ctx.publicApiRoutes)
+      "/"        -> helloWorldRoutes,
+      "/api"     -> middlewares(publicApiRoutes),
+      "/private" -> middlewares(privateApiRoutes)
     ).orNotFound
+  }
 
   final def stream[F[_]: ConcurrentEffect: Timer]: fs2.Stream[F, ExitCode] =
     for {
       ctx      <- Stream.emit(new Module[F])
-      app      <- Stream.emit(ResponseTiming[F](app(ctx))) // TODO: Can we put this `ResponseTiming` in the Module#middlewares ??
+      app      <- Stream.emit(ResponseTiming[F](app(ctx))) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
       exitCode <- BlazeServerBuilder[F].bindHttp(8080, "0.0.0.0").withHttpApp(app).serve
     } yield exitCode
 

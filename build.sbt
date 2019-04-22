@@ -36,14 +36,24 @@ lazy val testKitLibs = Seq(
   "com.ironcorelabs" %% "cats-scalatest" % "2.4.0",
 ).map(_ % Test)
 
+// ### Commons ###
+
+lazy val commonSettings =
+  Seq(
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0"),
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-effect" % "1.2.0"
+    ) ++ testKitLibs
+  )
+
 // ### Projects ###
 
 lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
     .settings(noPublishSettings: _*)
-    .aggregate(core, `json-parser`, `api-public`, `test-kit`)
-    .dependsOn(core, `json-parser`, `api-public`, `test-kit`)
+    .aggregate(core, `json-parser`, `api-server`, `api-public`, `api-private`, accounts, `test-kit`)
+    .dependsOn(core, `json-parser`, `api-server`, `api-public`, `api-private`, accounts, `test-kit`)
 
 lazy val core =
   project
@@ -52,24 +62,52 @@ lazy val core =
       libraryDependencies ++= Seq() ++ testKitLibs
     )
 
+lazy val `api-server` =
+  project
+    .settings(moduleName := s"$projectName-api-server")
+    .settings(commonSettings: _*)
+    .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
+    .settings(
+      //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
+      libraryDependencies ++= Seq(logback) ++ http4s
+    )
+    .settings(mainClass in Compile := Some("com.guizmaii.zeklin.api.Server"))
+    .dependsOn(`api-public`, `api-private`)
+    .dependsOn(`test-kit` % Test)
+
 lazy val `api-public` =
   project
-    .settings(moduleName := s"$projectName-api-publik")
+    .settings(moduleName := s"$projectName-api-outer")
     .settings(commonSettings: _*)
     .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
     .settings(
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s ++ circe
     )
-    .settings(mainClass in Compile := Some("com.guizmaii.zeklin.api.publik.Server"))
     .dependsOn(`json-parser`)
+    .dependsOn(`test-kit` % Test)
+
+lazy val `api-private` =
+  project
+    .settings(moduleName := s"$projectName-api-inner")
+    .settings(commonSettings: _*)
+    .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
+    .settings(
+      //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
+      libraryDependencies ++= Seq(logback) ++ http4s ++ circe
+    )
+    .dependsOn(accounts)
     .dependsOn(`test-kit` % Test)
 
 lazy val accounts =
   project
     .settings(moduleName := s"$projectName-accounts")
+    .settings(commonSettings: _*)
+    .settings(addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full))
     .settings(
-      libraryDependencies ++= Seq() ++ testKitLibs
+      libraryDependencies ++= Seq(
+        "org.systemfw" %% "eidos" % "0.1.1"
+      )
     )
 
 lazy val `json-parser` =
@@ -87,13 +125,7 @@ lazy val `test-kit` =
     .settings(noPublishSettings: _*)
     .settings(commonSettings: _*)
 
-// ### Commons ###
-
-lazy val commonSettings =
-  Seq(
-    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0"),
-    libraryDependencies ++= Seq() ++ testKitLibs
-  )
+// ### Others ###
 
 /**
   * Copied from Cats

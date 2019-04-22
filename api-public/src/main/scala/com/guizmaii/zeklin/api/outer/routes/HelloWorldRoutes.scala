@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.api.publik.routes
+package com.guizmaii.zeklin.api.outer.routes
 
 import cats.effect.Sync
 import io.circe.Json

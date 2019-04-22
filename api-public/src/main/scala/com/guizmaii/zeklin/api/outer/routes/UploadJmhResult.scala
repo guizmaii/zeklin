@@ -1,4 +1,4 @@
-package com.guizmaii.zeklin.api.publik.routes
+package com.guizmaii.zeklin.api.outer.routes
 
 import cats.effect.Effect
 import com.guizmaii.zeklin.jmh.json.JmhJsonResultAST.JmhResultAST
