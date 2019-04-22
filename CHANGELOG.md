@@ -6,6 +6,7 @@ More infos about this file : http://keepachangelog.com/
 
 ## [Unreleased] - no_due_date
 
-- **Init the `api` project with an http4s minimal project**
+- **Add an `/api/jmh/json` endpoint capable to receive JMH JSON results**
+- **Init the `api-public` project with an http4s minimal project**
 - **Implement the JMH JSON parser**
 - **Init project**
