@@ -85,7 +85,7 @@ lazy val `test-kit` =
 lazy val commonSettings =
   Seq(
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0"),
-    libraryDependencies ++= Seq() ++ testKitLibs,
+    libraryDependencies ++= Seq() ++ testKitLibs
   )
 
 /**
