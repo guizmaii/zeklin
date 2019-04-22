@@ -45,7 +45,7 @@ object Server extends IOApp {
   final def stream[F[_]: ConcurrentEffect: Timer]: fs2.Stream[F, ExitCode] =
     for {
       ctx      <- Stream.emit(new Module[F])
-      app      <- Stream.emit(ResponseTiming[F](app(ctx))) // TODO: Can we put this `ResponseTiming` is the Module#middlewares ??
+      app      <- Stream.emit(ResponseTiming[F](app(ctx))) // TODO: Can we put this `ResponseTiming` in the Module#middlewares ??
       exitCode <- BlazeServerBuilder[F].bindHttp(8080, "0.0.0.0").withHttpApp(app).serve
     } yield exitCode
 
