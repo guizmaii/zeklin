@@ -12,10 +12,7 @@ final class UploadJmhResult[F[_]: Effect] extends Http4sDsl[F] {
 
   final val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case req @ POST -> Root / "jmh" / "json" =>
-        req.as[List[JmhResultAST]].flatMap { _ =>
-          Ok()
-        }
+      case req @ POST -> Root / "jmh" / "json" => req.as[List[JmhResultAST]].flatMap(_ => Ok("TATA"))
     }
 
 }

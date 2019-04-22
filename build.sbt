@@ -27,7 +27,7 @@ lazy val http4s = ((version: String) =>
     "org.http4s" %% "http4s-blaze-server" % version,
     "org.http4s" %% "http4s-circe"        % version,
     "org.http4s" %% "http4s-dsl"          % version,
-  ))("0.20.0-RC1")
+  ))("0.20.0")
 
 lazy val testKitLibs = Seq(
   "org.scalacheck"   %% "scalacheck"     % "1.14.0",

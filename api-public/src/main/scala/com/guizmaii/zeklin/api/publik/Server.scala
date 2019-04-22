@@ -1,39 +1,55 @@
 package com.guizmaii.zeklin.api.publik
 
-import cats.data.Kleisli
-import cats.effect._
+import cats.effect.{ConcurrentEffect, IOApp, Timer}
 import com.guizmaii.zeklin.api.publik.routes.{HelloWorldRoutes, UploadJmhResult}
-import org.http4s.{HttpApp, HttpRoutes, Request, Response}
+import fs2.Stream
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.middleware.{AutoSlash, GZip, Logger}
+import org.http4s.{HttpApp, HttpRoutes}
 
-object Server extends IOApp {
-  import cats.implicits._
+/**
+  * Inspired by https://github.com/gvolpe/advanced-http4s/blob/master/src/main/scala/com/github/gvolpe/http4s/server/Module.scala
+  */
+final class Module[F[_]: ConcurrentEffect: Timer] {
 
-  override final def run(args: List[String]): IO[ExitCode] =
-    ServerStream.stream[IO].compile.drain.as(ExitCode.Success)
+  def middlewares: HttpRoutes[F] => HttpRoutes[F] = { service: HttpRoutes[F] =>
+    GZip(service)
+  } compose { service: HttpRoutes[F] =>
+    AutoSlash(service)
+  } compose { service: HttpRoutes[F] =>
+    Logger.httpRoutes(logHeaders = true, logBody = true)(service)
+  }
+
+  val helloWorldRoutes: HttpRoutes[F] = new HelloWorldRoutes[F].routes
+
+  val publicApiRoutes: HttpRoutes[F] = new UploadJmhResult[F].routes
+
 }
 
-object ServerStream {
+/**
+  * Inspired by https://github.com/gvolpe/advanced-http4s/blob/master/src/main/scala/com/github/gvolpe/http4s/server/Server.scala
+  */
+object Server extends IOApp {
+  import cats.effect._
+  import cats.implicits._
   import org.http4s.implicits._
   import org.http4s.server.middleware._
 
-  private final def helloWorldRoutes[F[_]: Effect]: (String, HttpRoutes[F]) = "/" -> new HelloWorldRoutes[F].routes
-  private final def publicApiRoutes[F[_]: Effect]: (String, HttpRoutes[F]) =
-    "/api" -> new UploadJmhResult[F].routes
+  private final def app[F[_]: ConcurrentEffect](ctx: Module[F]): HttpApp[F] =
+    Router(
+      "/"    -> ctx.helloWorldRoutes,
+      "/api" -> ctx.middlewares(ctx.publicApiRoutes)
+    ).orNotFound
 
-  private final def router[F[_]: ConcurrentEffect]: Kleisli[F, Request[F], Response[F]] =
-    Router[F](helloWorldRoutes, publicApiRoutes).orNotFound
+  final def stream[F[_]: ConcurrentEffect: Timer]: fs2.Stream[F, ExitCode] =
+    for {
+      ctx      <- Stream.emit(new Module[F])
+      app      <- Stream.emit(ResponseTiming[F](app(ctx))) // TODO: Can we put this `ResponseTiming` is the Module#middlewares ??
+      exitCode <- BlazeServerBuilder[F].bindHttp(8080, "0.0.0.0").withHttpApp(app).serve
+    } yield exitCode
 
-  private final def app[F[_]: ConcurrentEffect: Timer]: HttpApp[F] =
-    ResponseTiming[F](
-      Logger.httpApp(logHeaders = true, logBody = true)(router)
-    )
+  override final def run(args: List[String]): IO[ExitCode] =
+    stream[IO].compile.drain.as(ExitCode.Success)
 
-  final def stream[F[_]: ConcurrentEffect: Timer]: fs2.Stream[F, ExitCode] = {
-    BlazeServerBuilder[F]
-      .bindHttp(8080, "0.0.0.0")
-      .withHttpApp(app)
-      .serve
-  }
 }
