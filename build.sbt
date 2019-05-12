@@ -11,8 +11,21 @@ lazy val projectName = "zeklin"
 
 // ### Dependencies ###
 
-lazy val squants = "org.typelevel"  %% "squants"        % "1.4.0"
-lazy val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
+lazy val squants            = "org.typelevel"         %% "squants"                 % "1.4.0"
+lazy val logback            = "ch.qos.logback"        % "logback-classic"          % "1.2.3"
+lazy val zio                = "org.scalaz"            %% "scalaz-zio"              % "1.0-RC4"
+lazy val `zio-cats-interop` = "org.scalaz"            %% "scalaz-zio-interop-cats" % "1.0-RC4"
+lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"             % "1.3.0"
+lazy val h2                 = "com.h2database"        % "h2"                       % "1.4.199"
+lazy val flyway             = "org.flywaydb"          % "flyway-core"              % "5.2.4"
+lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"              % "0.11.0"
+
+lazy val doobie = ((version: String) =>
+  Seq(
+    "org.tpolecat" %% "doobie-core"   % version,
+    "org.tpolecat" %% "doobie-h2"     % version,
+    "org.tpolecat" %% "doobie-hikari" % version,
+  ))("0.6.0")
 
 lazy val circe = ((version: String) =>
   Seq(
@@ -40,10 +53,16 @@ lazy val testKitLibs = Seq(
 
 lazy val commonSettings =
   Seq(
-    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0"),
+    addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.0"),
+    addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.10"),
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-effect" % "1.2.0"
-    ) ++ testKitLibs
+      `cats-effects`,
+      zio,
+      `zio-cats-interop`,
+      pureconfig,
+      flyway,
+      h2,
+    ) ++ doobie ++ testKitLibs
   )
 
 // ### Projects ###
@@ -52,8 +71,8 @@ lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
     .settings(noPublishSettings: _*)
-    .aggregate(core, `json-parser`, `api-server`, `api-public`, `api-private`, accounts, `test-kit`)
-    .dependsOn(core, `json-parser`, `api-server`, `api-public`, `api-private`, accounts, `test-kit`)
+    .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, `test-kit`)
+    .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, `test-kit`)
 
 lazy val core =
   project
@@ -62,11 +81,10 @@ lazy val core =
       libraryDependencies ++= Seq() ++ testKitLibs
     )
 
-lazy val `api-server` =
+lazy val server =
   project
     .settings(moduleName := s"$projectName-api-server")
     .settings(commonSettings: _*)
-    .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
     .settings(
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s
@@ -79,7 +97,6 @@ lazy val `api-public` =
   project
     .settings(moduleName := s"$projectName-api-outer")
     .settings(commonSettings: _*)
-    .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
     .settings(
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s ++ circe
@@ -91,7 +108,6 @@ lazy val `api-private` =
   project
     .settings(moduleName := s"$projectName-api-inner")
     .settings(commonSettings: _*)
-    .settings(addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10"))
     .settings(
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s ++ circe
@@ -103,12 +119,6 @@ lazy val accounts =
   project
     .settings(moduleName := s"$projectName-accounts")
     .settings(commonSettings: _*)
-    .settings(addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full))
-    .settings(
-      libraryDependencies ++= Seq(
-        "org.systemfw" %% "eidos" % "0.1.1"
-      )
-    )
 
 lazy val `json-parser` =
   project

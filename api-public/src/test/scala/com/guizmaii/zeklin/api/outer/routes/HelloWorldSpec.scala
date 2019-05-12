@@ -1,15 +1,21 @@
 package com.guizmaii.zeklin.api.outer.routes
 
-import cats.effect.IO
 import org.http4s._
 import org.scalatest.{FreeSpec, Matchers}
+import scalaz.zio.{DefaultRuntime, Task}
 
 class HelloWorldSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
+  import scalaz.zio.interop.catz._
 
-  val service                                  = new HelloWorldRoutes[IO]
-  def request(name: String): Request[IO]       = Request[IO](Method.GET, Uri.fromString(s"/hello/$name").right.get)
-  def call(request: Request[IO]): Response[IO] = service.routes.orNotFound(request).unsafeRunSync()
+  private val runtime = new DefaultRuntime {}
+  private val service = new HelloWorldRoutes[Any]
+
+  private def request(name: String): Request[Task] =
+    Request[Task](Method.GET, Uri.fromString(s"/hello/$name").right.get)
+
+  private def call(request: Request[Task]): Response[Task] =
+    runtime.unsafeRun(service.routes.orNotFound(request))
 
   "/hello/:name" - {
     "return 200" in {
@@ -17,7 +23,7 @@ class HelloWorldSpec extends FreeSpec with Matchers {
     }
     "return hello :name" in {
       val name = "Jules"
-      call(request(name)).as[String].unsafeRunSync() shouldBe s"""{"message":"Hello, $name"}"""
+      runtime.unsafeRun(call(request(name)).as[String]) shouldBe s"""{"message":"Hello, $name"}"""
     }
   }
 

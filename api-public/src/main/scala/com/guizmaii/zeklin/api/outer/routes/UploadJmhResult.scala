@@ -1,17 +1,21 @@
 package com.guizmaii.zeklin.api.outer.routes
 
-import cats.effect.Effect
 import com.guizmaii.zeklin.jmh.json.JmhJsonResultAST.JmhResultAST
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
+import scalaz.zio.TaskR
 
-final class UploadJmhResult[F[_]: Effect] extends Http4sDsl[F] {
-
-  import cats.syntax.flatMap._
+final class UploadJmhResult[R] {
   import org.http4s.circe.CirceEntityCodec._
+  import scalaz.zio.interop.catz._
 
-  final val routes: HttpRoutes[F] =
-    HttpRoutes.of[F] {
+  type Task[A] = TaskR[R, A]
+
+  val dsl: Http4sDsl[Task] = Http4sDsl[Task]
+  import dsl._
+
+  final val routes: HttpRoutes[Task] =
+    HttpRoutes.of[Task] {
       case req @ POST -> Root / "jmh" / "json" => req.as[List[JmhResultAST]].flatMap(_ => Ok())
     }
 
