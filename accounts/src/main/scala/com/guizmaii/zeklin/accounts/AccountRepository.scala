@@ -22,6 +22,13 @@ object AccountRepository {
 
     def getById(id: AccountId): ZIO[R, Nothing, Option[Account]]
   }
+
+  def createAccount(user: User): ZIO[AccountRepository, Nothing, Account] =
+    ZIO.accessM(_.accountRepository.createAccount(user))
+
+  def getById(id: AccountId): ZIO[AccountRepository, Nothing, Option[Account]] =
+    ZIO.accessM(_.accountRepository.getById(id))
+
 }
 
 trait DoobieAccountRepository extends AccountRepository {

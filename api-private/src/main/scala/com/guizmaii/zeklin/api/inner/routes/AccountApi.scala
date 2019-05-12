@@ -25,7 +25,7 @@ final class AccountApi[R <: AccountRepository] {
         req
           .as[CreateReq]
           .map(r => User(firstName = r.firstName, lastName = r.lastName, email = r.email))
-          .flatMap(createAccount)
+          .flatMap(AccountRepository.createAccount)
           .foldM(
             { case e: MessageFailure => e.toHttpResponse(req.httpVersion) },
             _ => Created()
@@ -33,7 +33,7 @@ final class AccountApi[R <: AccountRepository] {
 
       case GET -> Root / "account" / UUIDVar(id) =>
         for {
-          account  <- getById(AccountId(id))
+          account  <- AccountRepository.getById(AccountId(id))
           response <- account.fold(NotFound())(Ok(_))
         } yield response
     }
