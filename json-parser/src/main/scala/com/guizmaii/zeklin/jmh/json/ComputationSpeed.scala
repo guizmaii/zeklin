@@ -42,7 +42,7 @@ object ComputationSpeedUnit {
     Decoder.decodeString.emap { s =>
       ComputationSpeed.symbolToUnit(s) match {
         case Some(value) => Right(value.asInstanceOf[ComputationSpeedUnit])
-        case None        => Left(s"Unsupported unit of measue: $s")
+        case None        => Left(s"Unsupported unit of measure: $s")
       }
     }
 }
