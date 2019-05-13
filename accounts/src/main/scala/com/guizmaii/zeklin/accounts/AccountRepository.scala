@@ -4,9 +4,9 @@ import java.util.UUID
 
 import doobie.h2.implicits._
 import doobie.implicits._
-import doobie.{Transactor, _}
+import doobie.{ Transactor, _ }
 import scalaz.zio.interop.catz._
-import scalaz.zio.{Task, ZIO}
+import scalaz.zio.{ Task, ZIO }
 
 final case class User(firstName: String, lastName: String, email: String)
 final case class AccountId(value: UUID) extends AnyVal

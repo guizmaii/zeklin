@@ -4,24 +4,24 @@ import cats.effect.ExitCode
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
-import com.guizmaii.zeklin.api.outer.routes.{HelloWorldRoutes, UploadJmhResult}
+import com.guizmaii.zeklin.api.outer.routes.{ HelloWorldRoutes, UploadJmhResult }
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
-import pureconfig.{ConfigReader, Exported}
+import pureconfig.{ ConfigReader, Exported }
 import scalaz.zio._
 import scalaz.zio.blocking.Blocking
 import scalaz.zio.clock.Clock
-import scalaz.zio.console.{Console, putStrLn}
+import scalaz.zio.console.{ putStrLn, Console }
 import scalaz.zio.random.Random
 import scalaz.zio.scheduler.Scheduler
 import scalaz.zio.system.System
 
 /**
-  * Inspired by:
-  *   - https://github.com/gvolpe/advanced-http4s/blob/master/src/main/scala/com/github/gvolpe/http4s/server/Server.scala
-  *   - https://github.com/mschuwalow/zio-todo-backend/blob/develop/app/src/main/scala/com/schuwalow/zio/todo/Main.scala
-  */
+ * Inspired by:
+ *   - https://github.com/gvolpe/advanced-http4s/blob/master/src/main/scala/com/github/gvolpe/http4s/server/Server.scala
+ *   - https://github.com/mschuwalow/zio-todo-backend/blob/develop/app/src/main/scala/com/schuwalow/zio/todo/Main.scala
+ */
 object Server extends App {
   import org.http4s.implicits._
   import org.http4s.server.middleware._
@@ -44,9 +44,9 @@ object Server extends App {
 
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
-      cfg        <- ZIO.fromEither(pureconfig.loadConfig[Config])
-      _          <- config.initDb(cfg.dbConfig)
-      blockingEC <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
+      cfg         <- ZIO.fromEither(pureconfig.loadConfig[Config])
+      _           <- config.initDb(cfg.dbConfig)
+      blockingEC  <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blockingEC)
       server = ZIO.runtime[AppEnvironment].flatMap { implicit rts =>
         BlazeServerBuilder[AppTask]
@@ -57,18 +57,18 @@ object Server extends App {
           .drain
       }
       program <- transactorR.use { transactor =>
-        server.provideSome[Environment] { base =>
-          new Clock with Console with System with Random with Blocking with DoobieAccountRepository {
-            override protected val xa: doobie.Transactor[Task] = transactor
+                  server.provideSome[Environment] { base =>
+                    new Clock with Console with System with Random with Blocking with DoobieAccountRepository {
+                      override protected val xa: doobie.Transactor[Task] = transactor
 
-            override val clock: Clock.Service[Any]         = base.clock
-            override val console: Console.Service[Any]     = base.console
-            override val system: System.Service[Any]       = base.system
-            override val random: Random.Service[Any]       = base.random
-            override val blocking: Blocking.Service[Any]   = base.blocking
-            override val scheduler: Scheduler.Service[Any] = base.scheduler
-          }
-        }
-      }
+                      override val clock: Clock.Service[Any]         = base.clock
+                      override val console: Console.Service[Any]     = base.console
+                      override val system: System.Service[Any]       = base.system
+                      override val random: Random.Service[Any]       = base.random
+                      override val blocking: Blocking.Service[Any]   = base.blocking
+                      override val scheduler: Scheduler.Service[Any] = base.scheduler
+                    }
+                  }
+                }
     } yield program).foldM(err => putStrLn(s"Execution failed with: $err") *> ZIO.succeed(1), _ => ZIO.succeed(0))
 }

@@ -1,10 +1,10 @@
 package com.guizmaii.zeklin.api.outer.routes
 
 import org.http4s._
-import org.scalatest.{FreeSpec, Matchers}
-import scalaz.zio.{DefaultRuntime, Task}
+import org.scalatest.{ FreeSpec, Matchers }
+import scalaz.zio.{ DefaultRuntime, Task }
 
-import scala.io.{Codec, Source}
+import scala.io.{ Codec, Source }
 
 object Helpers {
 

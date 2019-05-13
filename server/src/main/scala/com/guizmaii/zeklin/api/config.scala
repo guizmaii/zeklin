@@ -13,10 +13,10 @@ object config {
   final case class Config(dbConfig: DBConfig)
 
   final case class DBConfig(
-      url: String,
-      driver: String,
-      user: String,
-      password: String
+    url: String,
+    driver: String,
+    user: String,
+    password: String
   )
 
   def initDb(cfg: DBConfig): Task[Unit] =
@@ -29,9 +29,9 @@ object config {
     }.unit
 
   def makeTransactor(
-      cfg: DBConfig,
-      connectEC: ExecutionContext,
-      transactEC: ExecutionContext
+    cfg: DBConfig,
+    connectEC: ExecutionContext,
+    transactEC: ExecutionContext
   ): Managed[Throwable, Transactor[Task]] = Managed {
     HikariTransactor
       .newHikariTransactor[Task](cfg.driver, cfg.url, cfg.user, cfg.password, connectEC, transactEC)

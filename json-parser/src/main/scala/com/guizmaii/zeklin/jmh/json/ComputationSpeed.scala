@@ -1,11 +1,11 @@
 package com.guizmaii.zeklin.jmh.json
 
-import io.circe.{Decoder, Encoder, Json}
-import squants.{Dimension, MetricSystem, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import io.circe.{ Decoder, Encoder, Json }
+import squants.{ Dimension, MetricSystem, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  * TODO: Find a better name ?
-  */
+ * TODO: Find a better name ?
+ */
 final class ComputationSpeed(override final val value: Double, override final val unit: ComputationSpeedUnit)
     extends Quantity[ComputationSpeed] {
   override final val dimension: Dimension[ComputationSpeed] = ComputationSpeed

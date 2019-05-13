@@ -3,7 +3,7 @@ package com.guizmaii.zeklin.api.inner.routes
 import com.guizmaii.zeklin.accounts.AccountRepository
 import io.circe.generic.auto._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{HttpRoutes, MessageFailure}
+import org.http4s.{ HttpRoutes, MessageFailure }
 import scalaz.zio.TaskR
 import scalaz.zio.interop.catz._
 

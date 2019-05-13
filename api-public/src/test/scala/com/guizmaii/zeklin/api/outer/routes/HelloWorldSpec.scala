@@ -1,8 +1,8 @@
 package com.guizmaii.zeklin.api.outer.routes
 
 import org.http4s._
-import org.scalatest.{FreeSpec, Matchers}
-import scalaz.zio.{DefaultRuntime, Task}
+import org.scalatest.{ FreeSpec, Matchers }
+import scalaz.zio.{ DefaultRuntime, Task }
 
 class HelloWorldSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
