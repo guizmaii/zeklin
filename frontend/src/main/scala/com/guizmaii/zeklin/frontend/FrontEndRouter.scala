@@ -91,7 +91,7 @@ final class FrontEndRouter[R] {
         Ok(template(Seq(), index ++ buttonTag, Seq(), Seq()).render)
           .map(
             _.withContentType(`Content-Type`(MediaType.text.html, Charset.`UTF-8`))
-              .putHeaders(`Cache-Control`(NonEmptyList.of(`no-cache`())))
+              .putHeaders(cacheControlHeader)
           )
 
       case req if supportedStaticExtensions.exists(req.pathInfo.endsWith) =>
