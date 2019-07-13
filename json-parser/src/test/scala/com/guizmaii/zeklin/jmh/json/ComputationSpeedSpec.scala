@@ -1,6 +1,6 @@
 package com.guizmaii.zeklin.jmh.json
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
 class ComputationSpeedSpec extends FlatSpec with Matchers {
 

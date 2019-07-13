@@ -1,9 +1,9 @@
 package com.guizmaii.zeklin.jmh.json
 
 import cats.scalatest.ValidatedMatchers
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
-import scala.io.{Codec, Source}
+import scala.io.{ Codec, Source }
 
 class ParserSpec extends FlatSpec with Matchers with ValidatedMatchers {
 
