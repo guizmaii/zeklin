@@ -1,3 +1,7 @@
 # Zeklin [![Build Status](https://travis-ci.com/guizmaii/zeklin.svg?branch=master)](https://travis-ci.com/guizmaii/zeklin) [![codecov](https://codecov.io/gh/guizmaii/zeklin/branch/master/graph/badge.svg)](https://codecov.io/gh/guizmaii/zeklin)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fguizmaii%2Fzeklin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fguizmaii%2Fzeklin?ref=badge_shield)
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Zeklin</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://twitter.com/guizmaii" property="cc:attributionName" rel="cc:attributionURL">Jules Ivanic</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/guizmaii/zeklin" rel="dct:source">https://github.com/guizmaii/zeklin</a>.
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fguizmaii%2Fzeklin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fguizmaii%2Fzeklin?ref=badge_large)
