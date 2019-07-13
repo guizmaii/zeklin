@@ -3,12 +3,13 @@ package com.guizmaii.zeklin.frontend
 import java.net.URL
 
 import cats.data._
-import com.guizmaii.zeklin.frontend.js.JSMethods
+import com.guizmaii.zeklin.frontend.config.GithubConfigs
 import io.circe.Json
 import org.http4s.CacheDirective._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.{ Charset, HttpRoutes, MediaType, StaticFile }
+import org.passay.{ CharacterRule, EnglishCharacterData, PasswordGenerator }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.Modifier
 import zio.TaskR
@@ -49,11 +50,12 @@ object FrontEndRouter {
 
 }
 
-final class FrontEndRouter[R] {
+final class FrontEndRouter[R](config: GithubConfigs, passwordGenerator: PasswordGenerator) {
+  import FrontEndRouter._
   import cats.implicits._
   import org.http4s.circe._
+  import zio.IO
   import zio.interop.catz._
-  import FrontEndRouter._
 
   type Task[A] = TaskR[R, A]
 
@@ -73,14 +75,21 @@ final class FrontEndRouter[R] {
     )
   }
 
-  private val buttonTag: Seq[Modifier] = {
+  private val digits = new CharacterRule(EnglishCharacterData.Digit)
+  private val alpha  = new CharacterRule(EnglishCharacterData.Alphabetical)
+  private val lower  = new CharacterRule(EnglishCharacterData.LowerCase)
+  private val upper  = new CharacterRule(EnglishCharacterData.UpperCase)
+
+  private def newState: Task[String] = IO.effect(passwordGenerator.generatePassword(40, digits, alpha, lower, upper))
+
+  private def loginButton(state: String): Seq[Modifier] = {
     import scalatags.Text.all._
     List(
-      button(
-        id := "click-me-button",
-        `type` := "button",
-        onclick := s"${JSMethods.clickedMessage}()",
-        "Click Me"
+      a(
+        id := "login-link",
+        `type` := "login",
+        href := s"https://github.com/login/oauth/authorize?scope=user:email&client_id=${config.app.clientId}&state=$state",
+        "Login"
       )
     )
   }
@@ -88,11 +97,13 @@ final class FrontEndRouter[R] {
   final val routes: HttpRoutes[Task] =
     HttpRoutes.of[Task] {
       case GET -> Root =>
-        Ok(template(Seq(), index ++ buttonTag, Seq(), Seq()).render)
-          .map(
-            _.withContentType(`Content-Type`(MediaType.text.html, Charset.`UTF-8`))
-              .putHeaders(cacheControlHeader)
-          )
+        newState.flatMap { state =>
+          Ok(template(Seq(), index ++ loginButton(state), Seq(), Seq()).render)
+            .map(
+              _.withContentType(`Content-Type`(MediaType.text.html, Charset.`UTF-8`))
+                .putHeaders(cacheControlHeader)
+            )
+        }
 
       case req if supportedStaticExtensions.exists(req.pathInfo.endsWith) =>
         StaticFile

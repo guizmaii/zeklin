@@ -1,16 +1,20 @@
 package com.guizlaii.zeklin.frontend
 
-import com.guizmaii.zeklin.frontend.FrontEndRouter
+import com.guizmaii.zeklin.frontend.CallbacksRouter
+import com.guizmaii.zeklin.frontend.config.{ GithubAppConfigs, GithubConfigs }
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
-import zio.{ DefaultRuntime, Task }
+import zio.{ DefaultRuntime, TaskR }
 
 class FrontEndRouterSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
   import zio.interop.catz._
 
-  private val runtime = new DefaultRuntime {}
-  private val service = new FrontEndRouter[Any]
+  private val githubConfigs = GithubConfigs("random", GithubAppConfigs("random", "random", "random"))
+  private val runtime       = new DefaultRuntime {}
+  private val service       = new CallbacksRouter[DefaultRuntime#Environment](githubConfigs)
+
+  type Task[A] = TaskR[DefaultRuntime#Environment, A]
 
   private def request(name: String): Request[Task] =
     Request[Task](Method.GET, Uri.fromString(s"/hello/$name").right.get)

@@ -44,6 +44,7 @@ lazy val http4s = (
   (version: String) =>
     Seq(
       "org.http4s" %% "http4s-blaze-server" % version,
+      "org.http4s" %% "http4s-blaze-client" % version,
       "org.http4s" %% "http4s-circe"        % version,
       "org.http4s" %% "http4s-dsl"          % version,
       "org.http4s" %% "http4s-scalatags"    % version,
@@ -164,7 +165,10 @@ lazy val frontend =
     .settings(commonSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "0.9.7",
+        "com.47deg"    %% "github4s"             % "0.20.1",
+        "com.47deg"    %% "github4s-cats-effect" % "0.20.1",
+        "org.passay"   % "passay"                % "1.5.0",
+        "org.scala-js" %%% "scalajs-dom"         % "0.9.7",
       ) ++ http4s
     )
     .settings(

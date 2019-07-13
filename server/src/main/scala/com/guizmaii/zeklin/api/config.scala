@@ -1,5 +1,6 @@
 package com.guizmaii.zeklin.api
 
+import com.guizmaii.zeklin.frontend.config.GithubConfigs
 import doobie.hikari._
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
@@ -10,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 object config {
 
-  final case class Config(dbConfig: DBConfig)
+  final case class Config(dbConfig: DBConfig, github: GithubConfigs)
 
   final case class DBConfig(
     url: String,

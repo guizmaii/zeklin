@@ -1,14 +1,18 @@
 package com.guizmaii.zeklin.api
 
+import java.security.SecureRandom
+
 import cats.effect.ExitCode
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
-import com.guizmaii.zeklin.frontend.FrontEndRouter
+import com.guizmaii.zeklin.frontend.config.GithubConfigs
+import com.guizmaii.zeklin.frontend.{ CallbacksRouter, FrontEndRouter }
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.passay.PasswordGenerator
 import pureconfig.{ ConfigReader, Exported }
 import zio._
 import zio.blocking.Blocking
@@ -32,26 +36,31 @@ object Server extends App {
   type AppEnvironment = Environment with DoobieAccountRepository
   type AppTask[A]     = TaskR[AppEnvironment, A]
 
-  private final def router[R <: DoobieAccountRepository] =
+  private final def router[R <: AppEnvironment](config: GithubConfigs, passwordGenerator: PasswordGenerator) =
     Router(
-      "/"        -> new FrontEndRouter[R].routes,
-      "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
-      "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
+      "/"         -> new FrontEndRouter[R](config, passwordGenerator).routes,
+      "/callback" -> new CallbacksRouter[R](config).routes,
+      "/api"      -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
+      "/private"  -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
     ).orNotFound
 
-  private final def app[R <: DoobieAccountRepository]: HttpApp[AppTask] =
-    ResponseTiming[AppTask](router) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
+  private final def app[R <: AppEnvironment](
+    config: GithubConfigs,
+    passwordGenerator: PasswordGenerator
+  ): HttpApp[AppTask] =
+    ResponseTiming[AppTask](router(config, passwordGenerator)) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
 
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
       cfg         <- ZIO.fromEither(pureconfig.loadConfig[Config])
+      passwordG   <- IO.effect(new PasswordGenerator(SecureRandom.getInstanceStrong))
       _           <- config.initDb(cfg.dbConfig)
       blockingEC  <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blockingEC)
       server = ZIO.runtime[AppEnvironment].flatMap { implicit rts =>
         BlazeServerBuilder[AppTask]
           .bindHttp(8080, "0.0.0.0")
-          .withHttpApp(app)
+          .withHttpApp(app(cfg.github, passwordG))
           .serve
           .compile[AppTask, AppTask, ExitCode]
           .drain
