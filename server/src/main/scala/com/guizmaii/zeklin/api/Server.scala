@@ -9,13 +9,12 @@ import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import pureconfig.{ ConfigReader, Exported }
-import scalaz.zio._
-import scalaz.zio.blocking.Blocking
-import scalaz.zio.clock.Clock
-import scalaz.zio.console.{ putStrLn, Console }
-import scalaz.zio.random.Random
-import scalaz.zio.scheduler.Scheduler
-import scalaz.zio.system.System
+import zio._
+import zio.blocking.Blocking
+import zio.clock.Clock
+import zio.console.{ putStrLn, Console }
+import zio.random.Random
+import zio.system.System
 
 /**
  * Inspired by:
@@ -25,9 +24,9 @@ import scalaz.zio.system.System
 object Server extends App {
   import org.http4s.implicits._
   import org.http4s.server.middleware._
-  import scalaz.zio.interop.catz._
   import pureconfig.generic.auto._
-  implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij remove `pureconfig.generic.auto._` import...
+  import zio.interop.catz._
+  implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij removes `pureconfig.generic.auto._` import...
 
   type AppEnvironment = Environment with DoobieAccountRepository
   type AppTask[A]     = TaskR[AppEnvironment, A]
@@ -61,12 +60,11 @@ object Server extends App {
                     new Clock with Console with System with Random with Blocking with DoobieAccountRepository {
                       override protected val xa: doobie.Transactor[Task] = transactor
 
-                      override val clock: Clock.Service[Any]         = base.clock
-                      override val console: Console.Service[Any]     = base.console
-                      override val system: System.Service[Any]       = base.system
-                      override val random: Random.Service[Any]       = base.random
-                      override val blocking: Blocking.Service[Any]   = base.blocking
-                      override val scheduler: Scheduler.Service[Any] = base.scheduler
+                      override val clock: Clock.Service[Any]       = base.clock
+                      override val console: Console.Service[Any]   = base.console
+                      override val system: System.Service[Any]     = base.system
+                      override val random: Random.Service[Any]     = base.random
+                      override val blocking: Blocking.Service[Any] = base.blocking
                     }
                   }
                 }

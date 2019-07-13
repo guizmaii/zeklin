@@ -3,11 +3,11 @@ package com.guizmaii.zeklin.api.outer.routes
 import io.circe.Json
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import scalaz.zio.TaskR
+import zio.TaskR
 
 final class HelloWorldRoutes[R] {
   import org.http4s.circe._
-  import scalaz.zio.interop.catz._
+  import zio.interop.catz._
 
   type Task[A] = TaskR[R, A]
 

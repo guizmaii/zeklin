@@ -11,42 +11,48 @@ lazy val projectName = "zeklin"
 
 // ### Dependencies ###
 
-lazy val squants            = "org.typelevel"         %% "squants"                 % "1.4.0"
-lazy val logback            = "ch.qos.logback"        % "logback-classic"          % "1.2.3"
-lazy val zio                = "org.scalaz"            %% "scalaz-zio"              % "1.0-RC4"
-lazy val `zio-cats-interop` = "org.scalaz"            %% "scalaz-zio-interop-cats" % "1.0-RC4"
-lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"             % "1.3.0"
-lazy val h2                 = "com.h2database"        % "h2"                       % "1.4.199"
-lazy val flyway             = "org.flywaydb"          % "flyway-core"              % "5.2.4"
-lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"              % "0.11.0"
+lazy val squants            = "org.typelevel"         %% "squants"          % "1.4.0"
+lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC10-1"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "1.3.1.0-RC3"
+lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "1.3.1"
+lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
+lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "5.2.4"
+lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.11.1"
 
-lazy val doobie = ((version: String) =>
-  Seq(
-    "org.tpolecat" %% "doobie-core"   % version,
-    "org.tpolecat" %% "doobie-h2"     % version,
-    "org.tpolecat" %% "doobie-hikari" % version,
-  ))("0.6.0")
+lazy val doobie = (
+  (version: String) =>
+    Seq(
+      "org.tpolecat" %% "doobie-core"   % version,
+      "org.tpolecat" %% "doobie-h2"     % version,
+      "org.tpolecat" %% "doobie-hikari" % version,
+    )
+)("0.7.0")
 
-lazy val circe = ((version: String) =>
-  Seq(
-    "io.circe" %% "circe-core"    % version,
-    "io.circe" %% "circe-generic" % version,
-    "io.circe" %% "circe-parser"  % version,
-    "io.circe" %% "circe-fs2"     % "0.11.0",
-  ))("0.11.1")
+lazy val circe = (
+  (version: String) =>
+    Seq(
+      "io.circe" %% "circe-core"    % version,
+      "io.circe" %% "circe-generic" % version,
+      "io.circe" %% "circe-parser"  % version,
+      "io.circe" %% "circe-fs2"     % "0.11.0",
+    )
+)("0.11.1")
 
-lazy val http4s = ((version: String) =>
-  Seq(
-    "org.http4s" %% "http4s-blaze-server" % version,
-    "org.http4s" %% "http4s-circe"        % version,
-    "org.http4s" %% "http4s-dsl"          % version,
-  ))("0.20.0")
+lazy val http4s = (
+  (version: String) =>
+    Seq(
+      "org.http4s" %% "http4s-blaze-server" % version,
+      "org.http4s" %% "http4s-circe"        % version,
+      "org.http4s" %% "http4s-dsl"          % version,
+    )
+)("0.20.6")
 
 lazy val testKitLibs = Seq(
   "org.scalacheck"   %% "scalacheck"     % "1.14.0",
-  "org.scalactic"    %% "scalactic"      % "3.0.7",
-  "org.scalatest"    %% "scalatest"      % "3.0.7",
-  "com.ironcorelabs" %% "cats-scalatest" % "2.4.0",
+  "org.scalactic"    %% "scalactic"      % "3.0.8",
+  "org.scalatest"    %% "scalatest"      % "3.0.8",
+  "com.ironcorelabs" %% "cats-scalatest" % "2.4.1",
 ).map(_ % Test)
 
 // ### Commons ###
@@ -138,8 +144,8 @@ lazy val `test-kit` =
 // ### Others ###
 
 /**
-  * Copied from Cats
-  */
+ * Copied from Cats
+ */
 lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},

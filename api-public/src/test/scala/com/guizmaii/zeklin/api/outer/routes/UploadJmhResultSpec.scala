@@ -2,7 +2,7 @@ package com.guizmaii.zeklin.api.outer.routes
 
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
-import scalaz.zio.{ DefaultRuntime, Task }
+import zio.{ DefaultRuntime, Task }
 
 import scala.io.{ Codec, Source }
 
@@ -15,7 +15,7 @@ object Helpers {
 class UploadJmhResultSpec extends FreeSpec with Matchers {
   import Helpers._
   import org.http4s.implicits._
-  import scalaz.zio.interop.catz._
+  import zio.interop.catz._
 
   private val runtime = new DefaultRuntime {}
   private val service = new UploadJmhResult[Any]

@@ -4,8 +4,8 @@ import com.guizmaii.zeklin.accounts.AccountRepository
 import io.circe.generic.auto._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{ HttpRoutes, MessageFailure }
-import scalaz.zio.TaskR
-import scalaz.zio.interop.catz._
+import zio.TaskR
+import zio.interop.catz._
 
 final case class CreateReq(firstName: String, lastName: String, email: String)
 
@@ -28,7 +28,7 @@ final class AccountApi[R <: AccountRepository] {
           .flatMap(AccountRepository.createAccount)
           .foldM(
             { case e: MessageFailure => e.toHttpResponse(req.httpVersion) },
-            _ => Created()
+            account => Created(account.id.value)
           )
 
       case GET -> Root / "account" / UUIDVar(id) =>
