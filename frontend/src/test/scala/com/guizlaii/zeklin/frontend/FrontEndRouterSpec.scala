@@ -1,15 +1,16 @@
-package com.guizmaii.zeklin.api.outer.routes
+package com.guizlaii.zeklin.frontend
 
+import com.guizmaii.zeklin.frontend.FrontEndRouter
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
 import zio.{ DefaultRuntime, Task }
 
-class HelloWorldSpec extends FreeSpec with Matchers {
+class FrontEndRouterSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
   import zio.interop.catz._
 
   private val runtime = new DefaultRuntime {}
-  private val service = new HelloWorldRoutes[Any]
+  private val service = new FrontEndRouter[Any]
 
   private def request(name: String): Request[Task] =
     Request[Task](Method.GET, Uri.fromString(s"/hello/$name").right.get)

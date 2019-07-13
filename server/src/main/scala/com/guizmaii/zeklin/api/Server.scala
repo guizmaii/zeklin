@@ -4,7 +4,8 @@ import cats.effect.ExitCode
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
-import com.guizmaii.zeklin.api.outer.routes.{ HelloWorldRoutes, UploadJmhResult }
+import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
+import com.guizmaii.zeklin.frontend.FrontEndRouter
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -33,7 +34,7 @@ object Server extends App {
 
   private final def router[R <: DoobieAccountRepository] =
     Router(
-      "/"        -> new HelloWorldRoutes[R].routes,
+      "/"        -> new FrontEndRouter[R].routes,
       "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
       "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
     ).orNotFound

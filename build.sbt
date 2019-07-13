@@ -1,4 +1,5 @@
 import sbt.Keys.libraryDependencies
+import sbtcrossproject.CrossPlugin.autoImport.{ crossProject, CrossType }
 
 ThisBuild / organization := "com.guizmaii"
 ThisBuild / scalaVersion := "2.12.8"
@@ -45,6 +46,7 @@ lazy val http4s = (
       "org.http4s" %% "http4s-blaze-server" % version,
       "org.http4s" %% "http4s-circe"        % version,
       "org.http4s" %% "http4s-dsl"          % version,
+      "org.http4s" %% "http4s-scalatags"    % version,
     )
 )("0.20.6")
 
@@ -77,8 +79,8 @@ lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
     .settings(noPublishSettings: _*)
-    .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, `test-kit`)
-    .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, `test-kit`)
+    .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, frontend, `test-kit`)
+    .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, frontend, `test-kit`)
 
 lazy val core =
   project
@@ -95,8 +97,22 @@ lazy val server =
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s
     )
-    .settings(mainClass in Compile := Some("com.guizmaii.zeklin.api.Server"))
-    .dependsOn(`api-public`, `api-private`)
+    .settings(
+      mainClass in Compile := Some("com.guizmaii.zeklin.api.Server"),
+      // Allows to read the generated JS on client
+      resources in Compile += (fastOptJS in (frontend, Compile)).value.data,
+      // Lets the backend to read the .map file for js
+      resources in Compile += (fastOptJS in (frontend, Compile)).value
+        .map((x: sbt.File) => new File(x.getAbsolutePath + ".map"))
+        .data,
+      // Lets the server read the jsdeps file
+      (managedResources in Compile) += (artifactPath in (frontend, Compile, packageJSDependencies)).value,
+      // do a fastOptJS on reStart
+      reStart := (reStart dependsOn (fastOptJS in (frontend, Compile))).evaluated,
+      // This settings makes reStart to rebuild if a scala.js file changes on the client
+      watchSources ++= (watchSources in frontend).value,
+    )
+    .dependsOn(`api-public`, `api-private`, frontend, sharedJvm)
     .dependsOn(`test-kit` % Test)
 
 lazy val `api-public` =
@@ -140,6 +156,37 @@ lazy val `test-kit` =
     .settings(moduleName := s"$projectName-test-kit")
     .settings(noPublishSettings: _*)
     .settings(commonSettings: _*)
+
+lazy val frontend =
+  project
+    .enablePlugins(ScalaJSPlugin)
+    .settings(moduleName := s"$projectName-frontend")
+    .settings(commonSettings: _*)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "0.9.7",
+      ) ++ http4s
+    )
+    .settings(
+      // Build a js dependencies file
+      skip in packageJSDependencies := false,
+      jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
+      // Put the jsdeps file on a place reachable for the server
+      crossTarget in (Compile, packageJSDependencies) := (resourceManaged in Compile).value,
+    )
+    .dependsOn(sharedJs)
+
+lazy val shared =
+  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("shared"))
+    .settings(commonSettings: _*)
+    .settings(
+      libraryDependencies ++= Seq(
+        "com.lihaoyi" %%% "scalatags" % "0.7.0"
+      ) ++ circe
+    )
+
+lazy val sharedJvm = shared.jvm
+lazy val sharedJs  = shared.js
 
 // ### Others ###
 
