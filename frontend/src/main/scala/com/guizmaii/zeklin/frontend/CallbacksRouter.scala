@@ -29,13 +29,11 @@ final class CallbacksRouter[R <: Console with Github] {
             _     <- putStrLn(s"Hello Github $code")
             token <- fetchAccessToken(code, state)
             _     <- putStrLn("-------------")
-            _     <- putStrLn(s"accessToken: ${token}")
+            _     <- putStrLn(s"accessToken: $token")
             _     <- putStrLn("-------------")
             res   <- Ok("Hello Github")
           } yield res
         }
 
-      case GET -> Root / "accesstoken" =>
-        Ok("Github: Accessed!")
     }
 }

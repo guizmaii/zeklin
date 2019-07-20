@@ -21,7 +21,6 @@ final case class NewOAuthRequest(
   client_id: String,
   client_secret: String,
   code: String,
-  redirect_uri: String,
   state: String
 )
 object NewOAuthRequest {
@@ -77,7 +76,6 @@ class GithubLive(client: Client[Task], config: GithubAppConfigs, passwordGenerat
             client_id = config.clientId,
             client_secret = config.clientSecret,
             code = code,
-            redirect_uri = config.redirectUri,
             state = state
           )
         )
