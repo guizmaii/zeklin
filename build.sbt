@@ -62,7 +62,7 @@ lazy val testKitLibs = Seq(
 
 lazy val commonSettings =
   Seq(
-    addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.0"),
+    addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.1"),
     addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.10"),
     libraryDependencies ++= Seq(
       `cats-effects`,
