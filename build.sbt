@@ -2,7 +2,7 @@ import sbt.Keys.libraryDependencies
 import sbtcrossproject.CrossPlugin.autoImport.{ crossProject, CrossType }
 
 ThisBuild / organization := "com.guizmaii"
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := "2.12.9"
 ThisBuild / scalafmtOnCompile := true
 ThisBuild / scalafmtCheck := true
 ThisBuild / scalafmtSbtCheck := true
