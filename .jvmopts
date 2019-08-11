@@ -1,4 +1,0 @@
-# https://github.com/scala/bug/issues/11627#issuecomment-515265807
--XX:+UnlockExperimentalVMOptions
--XX:+EnableJVMCI
--XX:+UseJVMCICompiler
