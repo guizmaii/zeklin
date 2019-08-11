@@ -1,6 +1,5 @@
 package com.guizmaii.zeklin.github
 
-import java.nio.charset
 import java.nio.charset.StandardCharsets
 
 import com.guizmaii.zeklin.github.config.GithubAppConfigs
@@ -36,10 +35,10 @@ object Github {
 
   }
 
-  final val githubSignatureHeadeKey = CaseInsensitiveString("x-hub-signature")
+  private[github] final val githubSignatureHeadeKey = CaseInsensitiveString("x-hub-signature")
 
-  final val UTF_8: charset.Charset = StandardCharsets.UTF_8
-  final val SHA1: String           = "HmacSHA1"
+  private[github] final val UTF_8 = StandardCharsets.UTF_8
+  private[github] final val SHA1  = "HmacSHA1"
 
   private[github] final val githubAppMediaType: MediaType =
     new MediaType("application", "vnd.github.machine-man-preview+json")
