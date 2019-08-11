@@ -107,7 +107,6 @@ lazy val server =
     )
     .settings(
       mainClass in reStart := Some("com.guizmaii.zeklin.api.Server"),
-      reStart /
       // Allows to read the generated JS on client
       resources in Compile += (fastOptJS in (frontend, Compile)).value.data,
       // Lets the backend to read the .map file for js
