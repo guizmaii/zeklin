@@ -14,9 +14,9 @@ lazy val projectName = "zeklin"
 
 lazy val squants            = "org.typelevel"         %% "squants"          % "1.4.0"
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
-lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC10-1"
-lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "1.3.1.0-RC3"
-lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "1.3.1"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC11-1"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC2"
+lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0-RC1"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
 lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "5.2.4"
 lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.11.1"
@@ -40,8 +40,9 @@ lazy val circe = (
       "io.circe" %% "circe-parser"         % version,
       "io.circe" %% "circe-generic-extras" % version,
       "io.circe" %% "circe-java8"          % version,
+      "io.circe" %% "circe-optics"         % "0.11.0",
       "io.circe" %% "circe-fs2"            % "0.11.0",
-      "io.circe" %% "circe-literal"        % version
+      "io.circe" %% "circe-literal"        % version % Test
     )
 )("0.11.1")
 
@@ -54,7 +55,7 @@ lazy val http4s = (
       "org.http4s" %% "http4s-dsl"          % version,
       "org.http4s" %% "http4s-scalatags"    % version
     )
-)("0.20.6")
+)("0.20.9")
 
 lazy val testKitLibs = Seq(
   "org.scalacheck"   %% "scalacheck"     % "1.14.0",
@@ -105,7 +106,8 @@ lazy val server =
       libraryDependencies ++= Seq(logback) ++ http4s
     )
     .settings(
-      mainClass in Compile := Some("com.guizmaii.zeklin.api.Server"),
+      mainClass in reStart := Some("com.guizmaii.zeklin.api.Server"),
+      reStart /
       // Allows to read the generated JS on client
       resources in Compile += (fastOptJS in (frontend, Compile)).value.data,
       // Lets the backend to read the .map file for js

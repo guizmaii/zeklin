@@ -6,7 +6,7 @@ import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
 import zio.clock.Clock
 import zio.console.Console
-import zio.{ DefaultRuntime, TaskR, ZIO }
+import zio.{ DefaultRuntime, RIO, ZIO }
 
 class WebhookRouterSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
@@ -17,7 +17,7 @@ class WebhookRouterSpec extends FreeSpec with Matchers {
   }
 
   type TestEnv = Console with Clock with Github
-  type Task[A] = TaskR[TestEnv, A]
+  type Task[A] = RIO[TestEnv, A]
 
   private val runtime = new DefaultRuntime {}
   private val service = new WebhookRouter[TestEnv]

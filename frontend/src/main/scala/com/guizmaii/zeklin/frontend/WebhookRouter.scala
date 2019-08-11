@@ -1,71 +1,68 @@
 package com.guizmaii.zeklin.frontend
 
+import cats.data.{ Kleisli, OptionT }
 import com.guizmaii.zeklin.github.Github
-import com.guizmaii.zeklin.github.installation_event.Payload
+import io.circe.Json
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{ HttpRoutes, Response }
+import org.http4s.server.AuthMiddleware
+import org.http4s.{ AuthedRoutes, HttpRoutes, Request, Response }
 import zio.clock.Clock
 import zio.console.Console
-import zio.{ TaskR, ZIO }
+import zio.{ IO, RIO, ZIO }
+
+object WebhookRouter {
+  final case class JsonFieldMissing(fieldPath: String) extends RuntimeException(s"'$fieldPath' field is missing")
+}
 
 final class WebhookRouter[R <: Console with Github with Clock] {
 
-  import org.http4s.QueryParamDecoder._
+  import WebhookRouter._
   import zio.interop.catz._
-  import org.http4s.circe.CirceEntityDecoder._
 
-  type Task[A] = TaskR[R, A]
+  type Task[A] = RIO[R, A]
 
-  val dsl: Http4sDsl[Task] = Http4sDsl[Task]
+  private val dsl: Http4sDsl[Task] = Http4sDsl[Task]
   import dsl._
 
-  object CodeQueryParamMatcher  extends QueryParamDecoderMatcher[String]("code")
-  object StateQueryParamMatcher extends QueryParamDecoderMatcher[String]("state")
+  private def asTask[E, A](opt: Option[A])(ifEmpty: => E): IO[E, A] = ZIO.fromOption(opt).mapError(_ => ifEmpty)
 
-  val routes: HttpRoutes[Task] =
-    HttpRoutes.of[Task] {
-      case req @ POST -> Root =>
-        ZIO.accessM[R] { env =>
-          import env.github._
+  // TODO: Add tests for the webhook signature verification mecanism
+  private val authWebhook: Kleisli[Task, Request[Task], Either[String, Request[Task]]] =
+    Kleisli { request =>
+      ZIO.accessM[R] { env =>
+        import env.github._
 
-          def continue(parsedBody: Payload): Task[Response[Task]] =
-            ZIO.accessM { env =>
-              import env.console._
-              import env.github._
+        for {
+          rawBody <- request.as[String]
+          valid   <- isValidWebhookSignature(request.headers, rawBody)
+        } yield if (valid) Right(request) else Left("Invalid Webhook Signature")
+      }
+    }
 
-              for {
-                resp0 <- authenticateApp
-                resp1 <- authenticateAppInstallation(parsedBody.installation.id)
-                _     <- putStrLn(s"""
-                                 | resp0: $resp0
-                                 | resp1: $resp1
-                                 |""".stripMargin)
-                res   <- Ok("Hello Webhook")
-              } yield res
-            }
+  private val onFailure: AuthedRoutes[String, Task]           = Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
+  private val middleware: AuthMiddleware[Task, Request[Task]] = AuthMiddleware(authWebhook, onFailure)
 
-          for {
-            rawBody   <- req.as[String]
-            parseBody <- req.as[Payload]
-            valid     <- isValidWebhookSignature(req.headers, rawBody)
-            res       <- if (valid) continue(parseBody) else Forbidden("")
-          } yield res
-        }
+  private val authedRoutes: AuthedRoutes[Request[Task], Task] =
+    AuthedRoutes.of[Request[Task], Task] {
+      case POST -> Root as req =>
+        def create(id: Long): Task[Response[Task]] = Ok(s"TODO Created $id")
+        def delete(id: Long): Task[Response[Task]] = Ok(s"TODO Deleted $id")
 
-      case GET -> Root / "githubapp" :? CodeQueryParamMatcher(code) +& StateQueryParamMatcher(state) =>
-        ZIO.accessM[R] { env =>
-          import env.console._
-          import env.github._
+        import org.http4s.circe._
 
-          for {
-            _     <- putStrLn(s"Hello Github $code, state: $state")
-            token <- authenticateApp
-            _     <- putStrLn("-------------")
-            _     <- putStrLn(s"accessToken: $token")
-            _     <- putStrLn("-------------")
-            res   <- Ok("Hello Github")
-          } yield res
+        req.as[Json].flatMap { json =>
+          val action         = asTask(Github._action.getOption(json))(JsonFieldMissing("root.action"))
+          val installationId = asTask(Github._installationId.getOption(json))(JsonFieldMissing("root.installation.id"))
+
+          (action <*> installationId).flatMap {
+            case ("created", id) => create(id)
+            case ("deleted", id) => delete(id)
+            case (action, _)     => NotImplemented(s"$action Not Handled For Now")
+          }
         }
 
     }
+
+  val routes: HttpRoutes[Task] = middleware(authedRoutes)
+
 }

@@ -11,7 +11,7 @@ import org.http4s.headers._
 import org.http4s.{ Charset, HttpRoutes, MediaType, StaticFile }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.Modifier
-import zio.TaskR
+import zio.RIO
 
 import scala.concurrent.ExecutionContext.global
 
@@ -111,12 +111,12 @@ final class FrontEndRouter[R <: Github] {
   import org.http4s.circe._
   import zio.interop.catz._
 
-  type Task[A] = TaskR[R, A]
+  type Task[A] = RIO[R, A]
 
-  val dsl: Http4sDsl[Task] = Http4sDsl[Task]
+  private val dsl: Http4sDsl[Task] = Http4sDsl[Task]
   import dsl._
 
-  private def getResource(pathInfo: String): Task[URL] = TaskR.apply(getClass.getResource(pathInfo))
+  private def getResource(pathInfo: String): Task[URL] = RIO(getClass.getResource(pathInfo))
 
   private val index: List[TypedTag[String]] = List.empty
 

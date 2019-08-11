@@ -7,17 +7,17 @@ import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
-import com.guizmaii.zeklin.frontend.{FrontEndRouter, WebhookRouter}
-import com.guizmaii.zeklin.github.{Github, GithubLive}
+import com.guizmaii.zeklin.frontend.{ FrontEndRouter, WebhookRouter }
+import com.guizmaii.zeklin.github.{ Github, GithubLive }
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
-import pureconfig.{ConfigReader, Exported}
+import pureconfig.{ ConfigReader, Exported }
 import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
-import zio.console.{Console, putStrLn}
+import zio.console.{ putStrLn, Console }
 import zio.random.Random
 import zio.system.System
 
@@ -34,7 +34,7 @@ object Server extends App {
   implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij removes `pureconfig.generic.auto._` import...
 
   type AppEnvironment = Environment with DoobieAccountRepository with Github
-  type AppTask[A]     = TaskR[AppEnvironment, A]
+  type AppTask[A]     = RIO[AppEnvironment, A]
 
   private final def router[R <: AppEnvironment] =
     Router(

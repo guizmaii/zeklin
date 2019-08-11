@@ -4,8 +4,10 @@ import java.nio.charset
 import java.nio.charset.StandardCharsets
 
 import com.guizmaii.zeklin.github.config.GithubAppConfigs
+import io.circe.Json
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import monocle.Optional
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.util.encoders.Hex
 import org.http4s.client.Client
@@ -14,7 +16,7 @@ import org.http4s.util.CaseInsensitiveString
 import org.http4s.{ Headers, MediaType }
 import pdi.jwt.{ JwtAlgorithm, JwtCirce, JwtClaim }
 import zio.clock.Clock
-import zio.{ Task, TaskR, ZIO }
+import zio.{ RIO, Task, ZIO }
 
 import scala.concurrent.duration._
 
@@ -26,11 +28,11 @@ object Github {
 
   trait Service[R <: Clock] {
 
-    def isValidWebhookSignature(requestHeaders: Headers, rawRequestBody: String): TaskR[R, Boolean]
+    def isValidWebhookSignature(requestHeaders: Headers, rawRequestBody: String): RIO[R, Boolean]
 
-    def authenticateApp: TaskR[R, String]
+    def authenticateAsZeklin: RIO[R, Json]
 
-    def authenticateAppInstallation(installationId: Long): TaskR[R, String]
+    def createAppInstallationAccessToken(installationId: String): RIO[R, Json]
 
   }
 
@@ -41,6 +43,10 @@ object Github {
 
   private[github] final val githubAppMediaType: MediaType =
     new MediaType("application", "vnd.github.machine-man-preview+json")
+
+  import io.circe.optics.JsonPath._
+  final val _installationId: Optional[Json, Long] = root.installation.id.long
+  final val _action: Optional[Json, String]       = root.action.string
 
 }
 
@@ -84,7 +90,7 @@ final class GithubLive(client: Client[Task], githubConfig: GithubAppConfigs) ext
       /**
        * Algorithm comes from here: https://github.com/github-developer/github-app-template/blob/master/template_server.rb#L132
        */
-      override def isValidWebhookSignature(requestHeaders: Headers, rawRequestBody: String): TaskR[Clock, Boolean] = {
+      override def isValidWebhookSignature(requestHeaders: Headers, rawRequestBody: String): RIO[Clock, Boolean] = {
 
         /**
          * More infos:
@@ -129,18 +135,27 @@ final class GithubLive(client: Client[Task], githubConfig: GithubAppConfigs) ext
       /**
        * Algorithm comes from https://github.com/github-developer/github-app-template/blob/master/template_server.rb#L94
        */
-      override def authenticateApp: TaskR[Clock, String] =
+      override def authenticateAsZeklin: RIO[Clock, Json] = {
+        import org.http4s.circe._
+
         for {
           req  <- newRequest(uri"https://api.github.com/app")
-          resp <- client.fetchAs[String](req)
+          resp <- client.fetchAs[Json](req)
         } yield resp
+      }
 
-      override def authenticateAppInstallation(installationId: Long): TaskR[Clock, String] =
+      /*
+       * TODO: Find the correct return type.
+       */
+      override def createAppInstallationAccessToken(installationId: String): RIO[Clock, Json] = {
+        import org.http4s.circe._
+
         for {
           req <- newRequest(
                   Uri.unsafeFromString(s"https://api.github.com/app/installations/$installationId/access_tokens")
                 )
-          resp <- client.fetchAs[String](req)
+          resp <- client.fetchAs[Json](req)
         } yield resp
+      }
     }
 }
