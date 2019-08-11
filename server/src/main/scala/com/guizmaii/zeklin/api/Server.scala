@@ -1,17 +1,18 @@
 package com.guizmaii.zeklin.api
 
-import java.security.SecureRandom
+import java.security.Security
 
 import cats.effect.ExitCode
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
-import com.guizmaii.zeklin.frontend.{ CallbacksRouter, FrontEndRouter, Github, GithubLive }
+import com.guizmaii.zeklin.frontend.{ FrontEndRouter, WebhookRouter }
+import com.guizmaii.zeklin.github.{ Github, GithubLive }
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
-import org.passay.PasswordGenerator
 import pureconfig.{ ConfigReader, Exported }
 import zio._
 import zio.blocking.Blocking
@@ -33,23 +34,23 @@ object Server extends App {
   implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij removes `pureconfig.generic.auto._` import...
 
   type AppEnvironment = Environment with DoobieAccountRepository with Github
-  type AppTask[A]     = TaskR[AppEnvironment, A]
+  type AppTask[A]     = RIO[AppEnvironment, A]
 
   private final def router[R <: AppEnvironment] =
     Router(
-      "/"         -> new FrontEndRouter[R].routes,
-      "/callback" -> new CallbacksRouter[R].routes,
-      "/api"      -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
-      "/private"  -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
+      "/"        -> new FrontEndRouter[R].routes,
+      "/webhook" -> new WebhookRouter[R].routes,
+      "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
+      "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
     ).orNotFound
 
   private final def app[R <: AppEnvironment]: HttpApp[AppTask] =
-    ResponseTiming[AppTask](router) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
+    Logger.httpApp(logHeaders = true, logBody = true)(ResponseTiming[AppTask](router)) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
 
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
+      _           <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
       cfg         <- ZIO.fromEither(pureconfig.loadConfig[Config])
-      passwordG   <- IO.effect(new PasswordGenerator(SecureRandom.getInstanceStrong))
       _           <- config.initDb(cfg.dbConfig)
       blockingEC  <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blockingEC)
@@ -76,8 +77,8 @@ object Server extends App {
                         override val system: System.Service[Any]     = base.system
                         override val random: Random.Service[Any]     = base.random
                         override val blocking: Blocking.Service[Any] = base.blocking
-                        override val github: Github.Service[Any] =
-                          new GithubLive(httpClient, cfg.github, passwordG).github
+                        override val github: Github.Service[Clock] =
+                          new GithubLive(httpClient, cfg.github).github
                       }
                     }
                 }

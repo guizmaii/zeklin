@@ -1,24 +1,26 @@
 package com.guizlaii.zeklin.frontend
 
-import com.guizmaii.zeklin.frontend.{ CallbacksRouter, Github }
+import com.guizmaii.zeklin.frontend.WebhookRouter
+import com.guizmaii.zeklin.github.Github
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
+import zio.clock.Clock
 import zio.console.Console
-import zio.{ DefaultRuntime, TaskR, ZIO }
+import zio.{ DefaultRuntime, RIO, ZIO }
 
-class CallbackRouterSpec extends FreeSpec with Matchers {
+class WebhookRouterSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
   import zio.interop.catz._
 
   object TestGithub extends Github {
-    override val github: Github.Service[Any] = null
+    override val github: Github.Service[Clock] = null
   }
 
-  type TestEnv = Console with Github
-  type Task[A] = TaskR[TestEnv, A]
+  type TestEnv = Console with Clock with Github
+  type Task[A] = RIO[TestEnv, A]
 
   private val runtime = new DefaultRuntime {}
-  private val service = new CallbacksRouter[TestEnv]
+  private val service = new WebhookRouter[TestEnv]
 
   private def request(name: String) =
     Request[Task](Method.GET, Uri.fromString(s"/hello/$name").right.get)
@@ -29,9 +31,10 @@ class CallbackRouterSpec extends FreeSpec with Matchers {
     runtime.unsafeRun(
       task.provideSome[DefaultRuntime#Environment](
         base =>
-          new Console with Github {
+          new Console with Clock with Github {
             override val console: Console.Service[Any] = base.console
-            override val github: Github.Service[Any]   = TestGithub.github
+            override val github: Github.Service[Clock] = TestGithub.github
+            override val clock: Clock.Service[Any]     = base.clock
           }
       )
     )

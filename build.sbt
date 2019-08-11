@@ -14,29 +14,35 @@ lazy val projectName = "zeklin"
 
 lazy val squants            = "org.typelevel"         %% "squants"          % "1.4.0"
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
-lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC10-1"
-lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "1.3.1.0-RC3"
-lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "1.3.1"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC11-1"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC2"
+lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0-RC1"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
 lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "5.2.4"
 lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.11.1"
+lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "3.1.0"
+lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.62"
 
 lazy val doobie = (
   (version: String) =>
     Seq(
       "org.tpolecat" %% "doobie-core"   % version,
       "org.tpolecat" %% "doobie-h2"     % version,
-      "org.tpolecat" %% "doobie-hikari" % version,
+      "org.tpolecat" %% "doobie-hikari" % version
     )
 )("0.7.0")
 
 lazy val circe = (
   (version: String) =>
     Seq(
-      "io.circe" %% "circe-core"    % version,
-      "io.circe" %% "circe-generic" % version,
-      "io.circe" %% "circe-parser"  % version,
-      "io.circe" %% "circe-fs2"     % "0.11.0",
+      "io.circe" %% "circe-core"           % version,
+      "io.circe" %% "circe-generic"        % version,
+      "io.circe" %% "circe-parser"         % version,
+      "io.circe" %% "circe-generic-extras" % version,
+      "io.circe" %% "circe-java8"          % version,
+      "io.circe" %% "circe-optics"         % "0.11.0",
+      "io.circe" %% "circe-fs2"            % "0.11.0",
+      "io.circe" %% "circe-literal"        % version % Test
     )
 )("0.11.1")
 
@@ -47,15 +53,15 @@ lazy val http4s = (
       "org.http4s" %% "http4s-blaze-client" % version,
       "org.http4s" %% "http4s-circe"        % version,
       "org.http4s" %% "http4s-dsl"          % version,
-      "org.http4s" %% "http4s-scalatags"    % version,
+      "org.http4s" %% "http4s-scalatags"    % version
     )
-)("0.20.6")
+)("0.20.9")
 
 lazy val testKitLibs = Seq(
   "org.scalacheck"   %% "scalacheck"     % "1.14.0",
   "org.scalactic"    %% "scalactic"      % "3.0.8",
   "org.scalatest"    %% "scalatest"      % "3.0.8",
-  "com.ironcorelabs" %% "cats-scalatest" % "2.4.1",
+  "com.ironcorelabs" %% "cats-scalatest" % "2.4.1"
 ).map(_ % Test)
 
 // ### Commons ###
@@ -71,6 +77,7 @@ lazy val commonSettings =
       pureconfig,
       flyway,
       h2,
+      bouncycastle
     ) ++ doobie ++ testKitLibs
   )
 
@@ -80,8 +87,8 @@ lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
     .settings(noPublishSettings: _*)
-    .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, frontend, `test-kit`)
-    .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, frontend, `test-kit`)
+    .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, github, frontend, `test-kit`)
+    .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, github, frontend, `test-kit`)
 
 lazy val core =
   project
@@ -99,7 +106,7 @@ lazy val server =
       libraryDependencies ++= Seq(logback) ++ http4s
     )
     .settings(
-      mainClass in Compile := Some("com.guizmaii.zeklin.api.Server"),
+      mainClass in reStart := Some("com.guizmaii.zeklin.api.Server"),
       // Allows to read the generated JS on client
       resources in Compile += (fastOptJS in (frontend, Compile)).value.data,
       // Lets the backend to read the .map file for js
@@ -111,7 +118,7 @@ lazy val server =
       // do a fastOptJS on reStart
       reStart := (reStart dependsOn (fastOptJS in (frontend, Compile))).evaluated,
       // This settings makes reStart to rebuild if a scala.js file changes on the client
-      watchSources ++= (watchSources in frontend).value,
+      watchSources ++= (watchSources in frontend).value
     )
     .dependsOn(`api-public`, `api-private`, frontend, sharedJvm)
     .dependsOn(`test-kit` % Test)
@@ -142,6 +149,15 @@ lazy val accounts =
   project
     .settings(moduleName := s"$projectName-accounts")
     .settings(commonSettings: _*)
+
+lazy val github =
+  project
+    .settings(moduleName := s"$projectName-github")
+    .settings(commonSettings: _*)
+    .settings(
+      //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
+      libraryDependencies ++= Seq(`jwt-circe`) ++ http4s ++ circe
+    )
 
 lazy val `json-parser` =
   project
@@ -174,9 +190,9 @@ lazy val frontend =
       skip in packageJSDependencies := false,
       jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
       // Put the jsdeps file on a place reachable for the server
-      crossTarget in (Compile, packageJSDependencies) := (resourceManaged in Compile).value,
+      crossTarget in (Compile, packageJSDependencies) := (resourceManaged in Compile).value
     )
-    .dependsOn(sharedJs)
+    .dependsOn(sharedJs, github)
 
 lazy val shared =
   (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("shared"))

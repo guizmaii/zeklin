@@ -76,5 +76,5 @@ project/plugins/project/
 .cache
 .lib/
 /.idea/
-/zeklin.2019-07-13.private-key.pem
+**.pem
 secrets.conf

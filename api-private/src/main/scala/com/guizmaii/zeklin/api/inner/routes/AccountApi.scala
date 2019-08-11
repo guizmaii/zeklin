@@ -4,7 +4,7 @@ import com.guizmaii.zeklin.accounts.AccountRepository
 import io.circe.generic.auto._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{ HttpRoutes, MessageFailure }
-import zio.TaskR
+import zio.RIO
 import zio.interop.catz._
 
 final case class CreateReq(firstName: String, lastName: String, email: String)
@@ -14,7 +14,7 @@ final class AccountApi[R <: AccountRepository] {
   import com.guizmaii.zeklin.accounts._
   import org.http4s.circe.CirceEntityCodec._
 
-  type Task[A] = TaskR[R, A]
+  type Task[A] = RIO[R, A]
 
   val dsl: Http4sDsl[Task] = Http4sDsl[Task]
   import dsl._
