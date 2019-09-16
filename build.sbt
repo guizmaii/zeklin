@@ -2,7 +2,7 @@ import sbt.Keys.libraryDependencies
 import sbtcrossproject.CrossPlugin.autoImport.{ crossProject, CrossType }
 
 ThisBuild / organization := "com.guizmaii"
-ThisBuild / scalaVersion := "2.12.9"
+ThisBuild / scalaVersion := "2.12.10"
 ThisBuild / scalafmtOnCompile := true
 ThisBuild / scalafmtCheck := true
 ThisBuild / scalafmtSbtCheck := true
@@ -12,16 +12,16 @@ lazy val projectName = "zeklin"
 
 // ### Dependencies ###
 
-lazy val squants            = "org.typelevel"         %% "squants"          % "1.4.0"
+lazy val squants            = "org.typelevel"         %% "squants"          % "1.5.0"
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
-lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC11-1"
-lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC2"
-lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0-RC1"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC12-1"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC3"
+lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
-lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "5.2.4"
-lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.11.1"
-lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "3.1.0"
-lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.62"
+lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.3"
+lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.12.0"
+lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "4.0.0"
+lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.63"
 
 lazy val doobie = (
   (version: String) =>
@@ -38,13 +38,11 @@ lazy val circe = (
       "io.circe" %% "circe-core"           % version,
       "io.circe" %% "circe-generic"        % version,
       "io.circe" %% "circe-parser"         % version,
-      "io.circe" %% "circe-generic-extras" % version,
-      "io.circe" %% "circe-java8"          % version,
-      "io.circe" %% "circe-optics"         % "0.11.0",
-      "io.circe" %% "circe-fs2"            % "0.11.0",
+      "io.circe" %% "circe-generic-extras" % "0.12.2",
+      "io.circe" %% "circe-optics"         % "0.12.0",
       "io.circe" %% "circe-literal"        % version % Test
     )
-)("0.11.1")
+)("0.12.1")
 
 lazy val http4s = (
   (version: String) =>
@@ -55,7 +53,7 @@ lazy val http4s = (
       "org.http4s" %% "http4s-dsl"          % version,
       "org.http4s" %% "http4s-scalatags"    % version
     )
-)("0.20.9")
+)("0.20.10")
 
 lazy val testKitLibs = Seq(
   "org.scalacheck"   %% "scalacheck"     % "1.14.0",

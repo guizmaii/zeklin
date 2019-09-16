@@ -13,7 +13,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
-import pureconfig.{ ConfigReader, Exported }
+import pureconfig.{ ConfigReader, ConfigSource, Exported }
 import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
@@ -50,7 +50,7 @@ object Server extends App {
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
       _           <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
-      cfg         <- ZIO.fromEither(pureconfig.loadConfig[Config])
+      cfg         <- ZIO.fromEither(ConfigSource.default.load[Config])
       _           <- config.initDb(cfg.dbConfig)
       blockingEC  <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blockingEC)
