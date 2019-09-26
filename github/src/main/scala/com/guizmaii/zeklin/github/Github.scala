@@ -135,6 +135,7 @@ final class GithubLive(client: Client[Task], githubConfig: GithubAppConfigs) ext
        * Algorithm comes from https://github.com/github-developer/github-app-template/blob/master/template_server.rb#L94
        */
       override def authenticateAsZeklin: RIO[Clock, Json] = {
+        import org.http4s.implicits._
         import org.http4s.circe._
 
         for {

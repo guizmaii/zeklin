@@ -3,6 +3,7 @@ package com.guizmaii.zeklin.frontend
 import java.net.URL
 
 import cats.data._
+import cats.effect.Blocker
 import com.guizmaii.zeklin.github.Github
 import io.circe.Json
 import org.http4s.CacheDirective._
@@ -12,8 +13,6 @@ import org.http4s.{ Charset, HttpRoutes, MediaType, StaticFile }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.Modifier
 import zio.RIO
-
-import scala.concurrent.ExecutionContext.global
 
 object FrontEndRouter {
 
@@ -105,7 +104,7 @@ object FrontEndRouter {
 
 }
 
-final class FrontEndRouter[R <: Github] {
+final class FrontEndRouter[R <: Github](blocker: Blocker) {
   import FrontEndRouter._
   import cats.implicits._
   import org.http4s.circe._
@@ -163,8 +162,10 @@ final class FrontEndRouter[R <: Github] {
 
       case req if supportedStaticExtensions.exists(req.pathInfo.endsWith) =>
         StaticFile
-          .fromResource[Task](req.pathInfo, global, req.some)
-          .orElse(OptionT.liftF(getResource(req.pathInfo)).flatMap(StaticFile.fromURL[Task](_, global, req.some)))
+          .fromResource[Task](req.pathInfo, blocker, req.some)
+          .orElse(
+            OptionT.liftF(getResource(req.pathInfo)).flatMap(StaticFile.fromURL[Task](_, blocker, req.some))
+          )
           .map(_.putHeaders(cacheControlHeader))
           .fold(NotFound())(_.pure[Task])
           .flatten

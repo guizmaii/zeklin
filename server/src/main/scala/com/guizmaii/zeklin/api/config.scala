@@ -1,5 +1,6 @@
 package com.guizmaii.zeklin.api
 
+import cats.effect.Blocker
 import com.guizmaii.zeklin.github.config.GithubAppConfigs
 import doobie.hikari._
 import doobie.util.transactor.Transactor
@@ -35,10 +36,10 @@ object config {
   def makeTransactor(
     cfg: DBConfig,
     connectEC: ExecutionContext,
-    transactEC: ExecutionContext
+    blocker: Blocker
   ): Managed[Throwable, Transactor[Task]] = ZManaged {
     HikariTransactor
-      .newHikariTransactor[Task](cfg.driver, cfg.url, cfg.user, cfg.password, connectEC, transactEC)
+      .newHikariTransactor[Task](cfg.driver, cfg.url, cfg.user, cfg.password, connectEC, blocker)
       .allocated
       .map { case (transactor, cleanupM) => Reservation(ZIO.succeed(transactor), _ => cleanupM.orDie) }
       .uninterruptible

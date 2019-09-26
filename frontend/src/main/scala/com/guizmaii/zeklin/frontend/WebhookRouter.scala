@@ -14,8 +14,13 @@ object WebhookRouter {
   final case class JsonFieldMissing(fieldPath: String) extends RuntimeException(s"'$fieldPath' field is missing")
 }
 
-final class WebhookRouter[R <: Console with Github with Clock] {
+sealed trait WebhookEvent                              extends Product with Serializable
+final case class CreatedEvent(id: Long, payload: Json) extends WebhookEvent
+final case class DeletedEvent(id: Long, payload: Json) extends WebhookEvent
+final case class AddedEvent(id: Long, payload: Json)   extends WebhookEvent
+final case class RemovedEvent(id: Long, payload: Json) extends WebhookEvent
 
+final class WebhookRouter[R <: Console with Github with Clock] {
   import WebhookRouter._
   import zio.interop.catz._
 
@@ -45,8 +50,10 @@ final class WebhookRouter[R <: Console with Github with Clock] {
   private val authedRoutes: AuthedRoutes[Request[Task], Task] =
     AuthedRoutes.of[Request[Task], Task] {
       case POST -> Root as req =>
-        def create(id: Long): Task[Response[Task]] = Ok(s"TODO Created $id")
-        def delete(id: Long): Task[Response[Task]] = Ok(s"TODO Deleted $id")
+        def created(id: Long): Task[Response[Task]] = Ok(s"TODO Created $id")
+        def deleted(id: Long): Task[Response[Task]] = Ok(s"TODO Deleted $id")
+        def added(id: Long): Task[Response[Task]]   = Ok(s"TODO Added $id")
+        def removed(id: Long): Task[Response[Task]] = Ok(s"TODO Removed $id")
 
         import org.http4s.circe._
 
@@ -55,8 +62,10 @@ final class WebhookRouter[R <: Console with Github with Clock] {
           val installationId = asTask(Github._installationId.getOption(json))(JsonFieldMissing("root.installation.id"))
 
           (action <*> installationId).flatMap {
-            case ("created", id) => create(id)
-            case ("deleted", id) => delete(id)
+            case ("created", id) => created(id)
+            case ("deleted", id) => deleted(id)
+            case ("added", id)   => added(id)
+            case ("removed", id) => removed(id)
             case (action, _)     => NotImplemented(s"$action Not Handled For Now")
           }
         }

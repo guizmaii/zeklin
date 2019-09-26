@@ -14,13 +14,13 @@ lazy val projectName = "zeklin"
 
 lazy val squants            = "org.typelevel"         %% "squants"          % "1.5.0"
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
-lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC12-1"
-lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC3"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC13"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC4"
 lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
-lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.3"
+lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.4"
 lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.12.0"
-lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "4.0.0"
+lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "4.1.0"
 lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.63"
 
 lazy val doobie = (
@@ -30,7 +30,7 @@ lazy val doobie = (
       "org.tpolecat" %% "doobie-h2"     % version,
       "org.tpolecat" %% "doobie-hikari" % version
     )
-)("0.7.0")
+)("0.8.2")
 
 lazy val circe = (
   (version: String) =>
@@ -53,21 +53,21 @@ lazy val http4s = (
       "org.http4s" %% "http4s-dsl"          % version,
       "org.http4s" %% "http4s-scalatags"    % version
     )
-)("0.20.10")
+)("0.21.0-M5")
 
 lazy val testKitLibs = Seq(
-  "org.scalacheck"   %% "scalacheck"     % "1.14.0",
+  "org.scalacheck"   %% "scalacheck"     % "1.14.2",
   "org.scalactic"    %% "scalactic"      % "3.0.8",
   "org.scalatest"    %% "scalatest"      % "3.0.8",
-  "com.ironcorelabs" %% "cats-scalatest" % "2.4.1"
+  "com.ironcorelabs" %% "cats-scalatest" % "3.0.0"
 ).map(_ % Test)
 
 // ### Commons ###
 
 lazy val commonSettings =
   Seq(
-    addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.1"),
-    addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.10"),
+    addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
+    addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
     libraryDependencies ++= Seq(
       `cats-effects`,
       zio,

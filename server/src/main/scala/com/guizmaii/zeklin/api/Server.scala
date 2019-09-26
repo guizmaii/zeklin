@@ -2,7 +2,7 @@ package com.guizmaii.zeklin.api
 
 import java.security.Security
 
-import cats.effect.ExitCode
+import cats.effect.{ Blocker, ExitCode }
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
@@ -36,24 +36,28 @@ object Server extends App {
   type AppEnvironment = Environment with DoobieAccountRepository with Github
   type AppTask[A]     = RIO[AppEnvironment, A]
 
-  private final def router[R <: AppEnvironment] =
+  private final def router[R <: AppEnvironment](implicit blocker: Blocker) =
     Router(
-      "/"        -> new FrontEndRouter[R].routes,
+      "/"        -> new FrontEndRouter[R](blocker).routes,
       "/webhook" -> new WebhookRouter[R].routes,
       "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
       "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
     ).orNotFound
 
-  private final def app[R <: AppEnvironment]: HttpApp[AppTask] =
+  private final def app[R <: AppEnvironment](implicit blocker: Blocker): HttpApp[AppTask] =
     Logger.httpApp(logHeaders = true, logBody = true)(ResponseTiming[AppTask](router)) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
 
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
-      _           <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
-      cfg         <- ZIO.fromEither(ConfigSource.default.load[Config])
-      _           <- config.initDb(cfg.dbConfig)
-      blockingEC  <- ZIO.environment[Blocking].flatMap(_.blocking.blockingExecutor).map(_.asEC)
-      transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blockingEC)
+      _   <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
+      cfg <- ZIO.fromEither(ConfigSource.default.load[Config])
+      _   <- config.initDb(cfg.dbConfig)
+      implicit0(blocker: Blocker) <- ZIO
+                                      .environment[Blocking]
+                                      .flatMap(_.blocking.blockingExecutor)
+                                      .map(_.asEC)
+                                      .map(Blocker.liftExecutionContext)
+      transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blocker)
       httpClientR <- ZIO.runtime[Environment].map { implicit rts =>
                       config.makeHttpClient(Platform.executor.asEC)
                     }
