@@ -1,6 +1,6 @@
 # Github App Webhooks
 
-#### Github App - installation events
+#### Github App - App installation
 
 At app Installation, you'll receive these 2 webhooks:
 
@@ -62,7 +62,7 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
 
 The only difference between their body is the `"requester": null,` present in the `x-github-event: installation` event.
 
-#### Github App - add a repo to the App events
+#### Github App - Add a repo to the App
 
 These events are triggered when a repo is added to the Github App.
 
@@ -91,7 +91,7 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2635, 
         timestamp: 1569657373162
     ) 
-    body=""  /* See event_installation_repositories.json file */
+    body=""  /* See event_installation_repositories_added.json file */
 ```
 
   - Second one, `x-github-event: integration_installation_repositories` event
@@ -119,7 +119,69 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2635, 
         timestamp: 1569657373094
     ) 
-    body=""  /* See event_integration_installation_repositories.json file */
+    body=""  /* See event_integration_installation_repositories_added.json file */
+```
+
+The body of these events seems to be identical.
+
+#### Github App - Remove a repo from the App
+
+These events are triggered when a repo is added to the Github App.
+
+  - First one, `x-github-event: installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: installation_repositories, 
+        x-github-delivery: e8a850f8-e1c6-11e9-847d-fa17b8ca849f, 
+        x-hub-signature: sha1=da213704fe3248df706d77935caf03f02da137a2, 
+        x-request-id: 45685033-88e5-40a0-9f63-cd63152fd210, 
+        x-forwarded-for: 192.30.252.99, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569658003753, 
+        total-route-time: 0, 
+        content-length: 2677, 
+        timestamp: 1569658003756
+    )
+    body=""  /* See event_installation_repositories_removed.json file */
+```
+
+  - Second one, `x-github-event: integration_installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation_repositories, 
+        x-github-delivery: e8a850f8-e1c6-11e9-8853-4ea474e4d286, 
+        x-hub-signature: sha1=da213704fe3248df706d77935caf03f02da137a2, 
+        x-request-id: 4f0e8c5b-a845-42c8-9817-23165d694036, 
+        x-forwarded-for: 140.82.115.244, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569658003662, 
+        total-route-time: 0, 
+        content-length: 2677, 
+        timestamp: 1569658003665
+    )
+    body=""  /* See event_integration_installation_repositories_removed.json file */
 ```
 
 The body of these events seems to be identical.
