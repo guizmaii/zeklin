@@ -29,86 +29,7 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2550, 
         timestamp: 1569632142646
     ) 
-    body="
-    {
-        "action":"created",
-        "installation":
-        {
-            "id":2258044,
-            "account":
-            {
-                "login":"guizmaii",
-                "id":1193670,
-                "node_id":"MDQ6VXNlcjExOTM2NzA=",
-                "avatar_url":"https://avatars3.githubusercontent.com/u/1193670?v=4",
-                "gravatar_id":"",
-                "url":"https://api.github.com/users/guizmaii",
-                "html_url":"https://github.com/guizmaii",
-                "followers_url":"https://api.github.com/users/guizmaii/followers",
-                "following_url":"https://api.github.com/users/guizmaii/following{/other_user}",
-                "gists_url":"https://api.github.com/users/guizmaii/gists{/gist_id}",
-                "starred_url":"https://api.github.com/users/guizmaii/starred{/owner}{/repo}",
-                "subscriptions_url":"https://api.github.com/users/guizmaii/subscriptions",
-                "organizations_url":"https://api.github.com/users/guizmaii/orgs",
-                "repos_url":"https://api.github.com/users/guizmaii/repos",
-                "events_url":"https://api.github.com/users/guizmaii/events{/privacy}",
-                "received_events_url":"https://api.github.com/users/guizmaii/received_events",
-                "type":"User",
-                "site_admin":false
-            },
-            "repository_selection":"selected",
-            "access_tokens_url":"https://api.github.com/app/installations/2258044/access_tokens",
-            "repositories_url":"https://api.github.com/installation/repositories",
-            "html_url":"https://github.com/settings/installations/2258044",
-            "app_id":35516,
-            "target_id":1193670,
-            "target_type":"User",
-            "permissions":
-            {
-                "administration":"read",
-                "checks":"write",
-                "contents":"read",
-                "metadata":"read",
-                "pull_requests":"write"
-            },
-            "events":[],
-            "created_at":1569632142,
-            "updated_at":1569632142,
-            "single_file_name":null
-        },
-        "repositories":
-        [
-            {
-                "id":163209183,
-                "node_id":"MDEwOlJlcG9zaXRvcnkxNjMyMDkxODM=",
-                "name":"zeklin",
-                "full_name":"guizmaii/zeklin","private":false
-            }
-        ],
-        "requester":null,
-        "sender":
-        {
-            "login":"guizmaii",
-            "id":1193670,
-            "node_id":"MDQ6VXNlcjExOTM2NzA=",
-            "avatar_url":"https://avatars3.githubusercontent.com/u/1193670?v=4",
-            "gravatar_id":"",
-            "url":"https://api.github.com/users/guizmaii",
-            "html_url":"https://github.com/guizmaii",
-            "followers_url":"https://api.github.com/users/guizmaii/followers",
-            "following_url":"https://api.github.com/users/guizmaii/following{/other_user}",
-            "gists_url":"https://api.github.com/users/guizmaii/gists{/gist_id}",
-            "starred_url":"https://api.github.com/users/guizmaii/starred{/owner}{/repo}",
-            "subscriptions_url":"https://api.github.com/users/guizmaii/subscriptions",
-            "organizations_url":"https://api.github.com/users/guizmaii/orgs",
-            "repos_url":"https://api.github.com/users/guizmaii/repos",
-            "events_url":"https://api.github.com/users/guizmaii/events{/privacy}",
-            "received_events_url":"https://api.github.com/users/guizmaii/received_events",
-            "type":"User",
-            "site_admin":false
-        }
-    }
-    "
+    body=""  /* See event_installation.json file */
 ```
 
   - One with `x-github-event: integration_installation` header
@@ -136,86 +57,67 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2533, 
         timestamp: 1569632142743
     ) 
-    body="
-    {
-        "action":"created",
-        "installation":
-        {
-            "id":2258044,
-            "account":
-            {
-                "login":"guizmaii",
-                "id":1193670,
-                "node_id":"MDQ6VXNlcjExOTM2NzA=",
-                "avatar_url":"https://avatars3.githubusercontent.com/u/1193670?v=4",
-                "gravatar_id":"",
-                "url":"https://api.github.com/users/guizmaii",
-                "html_url":"https://github.com/guizmaii",
-                "followers_url":"https://api.github.com/users/guizmaii/followers",
-                "following_url":"https://api.github.com/users/guizmaii/following{/other_user}",
-                "gists_url":"https://api.github.com/users/guizmaii/gists{/gist_id}",
-                "starred_url":"https://api.github.com/users/guizmaii/starred{/owner}{/repo}",
-                "subscriptions_url":"https://api.github.com/users/guizmaii/subscriptions",
-                "organizations_url":"https://api.github.com/users/guizmaii/orgs",
-                "repos_url":"https://api.github.com/users/guizmaii/repos",
-                "events_url":"https://api.github.com/users/guizmaii/events{/privacy}",
-                "received_events_url":"https://api.github.com/users/guizmaii/received_events",
-                "type":"User",
-                "site_admin":false
-            },
-            "repository_selection":"selected",
-            "access_tokens_url":"https://api.github.com/app/installations/2258044/access_tokens",
-            "repositories_url":"https://api.github.com/installation/repositories",
-            "html_url":"https://github.com/settings/installations/2258044",
-            "app_id":35516,
-            "target_id":1193670,
-            "target_type":"User",
-            "permissions":
-            {
-                "administration":"read",
-                "checks":"write",
-                "contents":"read",
-                "metadata":"read",
-                "pull_requests":"write"
-            },
-            "events":[],
-            "created_at":1569632142,
-            "updated_at":1569632142,
-            "single_file_name":null
-        },
-        "repositories":
-        [
-            {
-                "id":163209183,
-                "node_id":"MDEwOlJlcG9zaXRvcnkxNjMyMDkxODM=",
-                "name":"zeklin",
-                "full_name":"guizmaii/zeklin",
-                "private":false
-            }
-        ],
-        "sender":
-        {
-            "login":"guizmaii",
-            "id":1193670,
-            "node_id":"MDQ6VXNlcjExOTM2NzA=",
-            "avatar_url":"https://avatars3.githubusercontent.com/u/1193670?v=4",
-            "gravatar_id":"",
-            "url":"https://api.github.com/users/guizmaii",
-            "html_url":"https://github.com/guizmaii",
-            "followers_url":"https://api.github.com/users/guizmaii/followers",
-            "following_url":"https://api.github.com/users/guizmaii/following{/other_user}",
-            "gists_url":"https://api.github.com/users/guizmaii/gists{/gist_id}",
-            "starred_url":"https://api.github.com/users/guizmaii/starred{/owner}{/repo}",
-            "subscriptions_url":"https://api.github.com/users/guizmaii/subscriptions",
-            "organizations_url":"https://api.github.com/users/guizmaii/orgs",
-            "repos_url":"https://api.github.com/users/guizmaii/repos",
-            "events_url":"https://api.github.com/users/guizmaii/events{/privacy}",
-            "received_events_url":"https://api.github.com/users/guizmaii/received_events",
-            "type":"User",
-            "site_admin":false
-        }
-    }
-    "
+    body=""  /* See event_integration_installation.json file */
 ```
 
 The only difference between their body is the `"requester": null,` present in the `x-github-event: installation` event.
+
+#### Random event ?
+
+These `check_suite` events happened randomly, apparently.
+
+  - First one
+
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: check_suite, 
+        x-github-delivery: 1ec06510-e1bb-11e9-9611-fe24f8c737f2, 
+        x-hub-signature: sha1=e56e141da168fb458aa86b4bef823d5dedc7d407, 
+        x-request-id: 174560b8-a9ed-4b08-8dc2-07c1a94f20bc, 
+        x-forwarded-for: 140.82.115.245, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569652940534, 
+        total-route-time: 0, 
+        content-length: 8344, 
+        timestamp: 1569652940537
+    ) 
+    body=""  /* See event_check_suite_0.json file */
+```
+
+  - Second one
+
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: check_suite, 
+        x-github-delivery: 633d81a0-e1bb-11e9-9e91-7773f3307b54, 
+        x-hub-signature: sha1=57c6051d1230dae0dd18026aebf883fe669dd3dd, 
+        x-request-id: 0cd3f02a-6a38-48e3-96e8-61960f2f2c3d, 
+        x-forwarded-for: 140.82.115.244, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 3, 
+        x-request-start: 1569653055395, 
+        total-route-time: 0, 
+        content-length: 8353, 
+        timestamp: 1569653055412
+    ) 
+    body=""  /* See event_check_suite_1.json file */
+```
