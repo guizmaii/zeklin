@@ -64,7 +64,7 @@ The only difference between their body is the `"requester": null,` present in th
 
 #### Random event ?
 
-These `check_suite` events happened randomly, apparently.
+These `check_suite` events seems to happen when there's a commit.
 
   - First one
 
