@@ -218,4 +218,4 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
     "
 ```
 
-They have *almost* the same body.
+The only difference between their body is the `"requester": null,` present in the `x-github-event: installation` event.
