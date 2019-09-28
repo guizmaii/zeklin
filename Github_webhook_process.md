@@ -6,7 +6,7 @@ At app Installation, you'll receive these 2 webhooks:
 
   - One with `x-github-event: installation` header
 
-```json
+```
 INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
     Headers(
         host: smee.io, 
@@ -113,7 +113,7 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
 
   - One with `x-github-event: integration_installation` header
 
-```json
+```
 INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
     Headers(
         host: smee.io, 
