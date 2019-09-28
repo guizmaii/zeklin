@@ -253,6 +253,126 @@ while in the `integration_installation_repositories` event, it's set to `"all"`
 
 TODO: Find Why?
 
+
+#### Github App - Go from "all repos" to "some repo only"
+
+These events are triggered when the user choose to change the access rights of the App to its repo, 
+from all his repos to some of his repos.
+
+  - First one, `x-github-event: integration_installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation_repositories, 
+        x-github-delivery: 07913130-e1ca-11e9-86cd-f4e558452a4e, 
+        x-hub-signature: sha1=34a32484c574d670637385979a3a090f5739fa3c, 
+        x-request-id: 3381c1cf-ce8c-427c-a622-8f244935d015, 
+        x-forwarded-for: 192.30.252.91, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569659344008, 
+        total-route-time: 0, 
+        content-length: 2592, 
+        timestamp: 1569659344010
+    )
+    body=""  /* See event_integration_installation_repositories_from_all_to_some_added.json file */
+```
+
+  - Second one, `x-github-event: installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: installation_repositories, 
+        x-github-delivery: 07913130-e1ca-11e9-8c1c-15f214e75a9a, 
+        x-hub-signature: sha1=34a32484c574d670637385979a3a090f5739fa3c, 
+        x-request-id: cd9c6b2e-48b6-4f20-9b68-7d28b3716ef0, 
+        x-forwarded-for: 140.82.115.251, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 1, 
+        x-request-start: 1569659344038, 
+        total-route-time: 0, 
+        content-length: 2592, 
+        timestamp: 1569659344040
+    )
+    body=""  /* See event_installation_repositories_from_all_to_some_added.json file */
+```
+
+  - Third one, `x-github-event: integration_installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation_repositories, 
+        x-github-delivery: 079dd8ae-e1ca-11e9-8283-0aa404bedfa6, 
+        x-hub-signature: sha1=b2fa1ab6b769ed202670897fbb285c15849b294a, 
+        x-request-id: a21c2bcd-3355-435f-9a6d-06586d1b079e, 
+        x-forwarded-for: 140.82.115.248, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569659344216, 
+        total-route-time: 0, 
+        content-length: 20319, 
+        timestamp: 1569659344218
+    )
+    body=""  /* See event_integration_installation_repositories_from_all_to_some_removed.json file */
+```
+
+  - Fourth one, `x-github-event: installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        ccept: */*, 
+        x-github-event: installation_repositories, 
+        x-github-delivery: 079dd8ae-e1ca-11e9-89f1-001d1d4487be, 
+        x-hub-signature: sha1=b2fa1ab6b769ed202670897fbb285c15849b294a, 
+        x-request-id: 008a66d4-1468-493a-a738-2373aac722e8, 
+        x-forwarded-for: 192.30.252.90, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 1, 
+        x-request-start: 1569659344236, 
+        total-route-time: 0, 
+        content-length: 20319, 
+        timestamp: 1569659344279
+    )
+    body=""  /* See event_installation_repositories_from_all_to_some_removed.json file */
+```
+
+The events body are identical.
+
 #### Git commit events
 
 These `check_suite` events seems to happen when there's a commit.
