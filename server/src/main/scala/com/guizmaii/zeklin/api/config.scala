@@ -1,9 +1,10 @@
 package com.guizmaii.zeklin.api
 
-import cats.effect.Blocker
+import cats.effect.{ Blocker, ContextShift }
 import com.guizmaii.zeklin.github.config.GithubAppConfigs
 import doobie.hikari._
 import doobie.util.transactor.Transactor
+import fs2.kafka.KafkaProducer
 import org.flywaydb.core.Flyway
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
@@ -45,11 +46,27 @@ object config {
       .uninterruptible
   }
 
-  def makeHttpClient[R](ec: ExecutionContext)(implicit runtime: Runtime[R]): Managed[Throwable, Client[Task]] =
+  def makeHttpClient[R: Runtime](ec: ExecutionContext): Managed[Throwable, Client[Task]] =
     ZManaged {
       BlazeClientBuilder[Task](ec).allocated.map {
         case (client, cleanupM) =>
           Reservation(ZIO.succeed(Logger(logHeaders = true, logBody = true)(client)), _ => cleanupM.orDie)
+      }.uninterruptible
+    }
+
+  def makeKafkaProducer[R: Runtime](
+    bootstrapServers: String
+  )(implicit blocker: Blocker, ctx: ContextShift[Task]): Managed[Throwable, KafkaProducer[Task, String, String]] =
+    ZManaged {
+      import fs2.kafka._
+
+      val producerSettings =
+        ProducerSettings[Task, String, String]
+          .withBlocker(blocker)
+          .withBootstrapServers(bootstrapServers)
+
+      producerResource(producerSettings).allocated.map {
+        case (client, cleanupM) => Reservation(ZIO.succeed(client), _ => cleanupM.orDie)
       }.uninterruptible
     }
 

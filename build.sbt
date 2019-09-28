@@ -22,6 +22,7 @@ lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6
 lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.12.0"
 lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "4.1.0"
 lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.63"
+lazy val `fs2-kafka`        = "com.ovoenergy"         %% "fs2-kafka"        % "0.20.1"
 
 lazy val doobie = (
   (version: String) =>
@@ -75,7 +76,8 @@ lazy val commonSettings =
       pureconfig,
       flyway,
       h2,
-      bouncycastle
+      bouncycastle,
+      `fs2-kafka`
     ) ++ doobie ++ testKitLibs
   )
 
@@ -118,7 +120,7 @@ lazy val server =
       // This settings makes reStart to rebuild if a scala.js file changes on the client
       watchSources ++= (watchSources in frontend).value
     )
-    .dependsOn(`api-public`, `api-private`, frontend, sharedJvm)
+    .dependsOn(modules, `api-public`, `api-private`, frontend, sharedJvm)
     .dependsOn(`test-kit` % Test)
 
 lazy val `api-public` =
@@ -157,6 +159,11 @@ lazy val github =
       libraryDependencies ++= Seq(`jwt-circe`) ++ http4s ++ circe
     )
 
+lazy val modules =
+  project
+    .settings(moduleName := s"$projectName-modules")
+    .settings(commonSettings: _*)
+
 lazy val `json-parser` =
   project
     .settings(moduleName := s"$projectName-json-parser")
@@ -190,7 +197,7 @@ lazy val frontend =
       // Put the jsdeps file on a place reachable for the server
       crossTarget in (Compile, packageJSDependencies) := (resourceManaged in Compile).value
     )
-    .dependsOn(sharedJs, github)
+    .dependsOn(modules, sharedJs, github)
 
 lazy val shared =
   (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("shared"))

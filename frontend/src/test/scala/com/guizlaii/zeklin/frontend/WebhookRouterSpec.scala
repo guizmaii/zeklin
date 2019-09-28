@@ -2,6 +2,7 @@ package com.guizlaii.zeklin.frontend
 
 import com.guizmaii.zeklin.frontend.WebhookRouter
 import com.guizmaii.zeklin.github.Github
+import com.guizmaii.zeklin.modules.KafkaProducerModule
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }
 import zio.clock.Clock
@@ -12,11 +13,7 @@ class WebhookRouterSpec extends FreeSpec with Matchers {
   import org.http4s.implicits._
   import zio.interop.catz._
 
-  object TestGithub extends Github {
-    override val github: Github.Service[Clock] = null
-  }
-
-  type TestEnv = Console with Clock with Github
+  type TestEnv = Console with Clock with Github with KafkaProducerModule
   type Task[A] = RIO[TestEnv, A]
 
   private val runtime = new DefaultRuntime {}
@@ -31,10 +28,11 @@ class WebhookRouterSpec extends FreeSpec with Matchers {
     runtime.unsafeRun(
       task.provideSome[DefaultRuntime#Environment](
         base =>
-          new Console with Clock with Github {
-            override val console: Console.Service[Any] = base.console
-            override val github: Github.Service[Clock] = TestGithub.github
-            override val clock: Clock.Service[Any]     = base.clock
+          new Console with Clock with Github with KafkaProducerModule {
+            override val console: Console.Service[Any]                   = base.console
+            override val clock: Clock.Service[Any]                       = base.clock
+            override val github: Github.Service[Clock]                   = null
+            override val kafkaProducer: KafkaProducerModule.Service[Any] = null
           }
       )
     )

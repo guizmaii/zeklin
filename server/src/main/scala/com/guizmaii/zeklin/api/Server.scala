@@ -9,6 +9,8 @@ import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
 import com.guizmaii.zeklin.frontend.{ FrontEndRouter, WebhookRouter }
 import com.guizmaii.zeklin.github.{ Github, GithubLive }
+import com.guizmaii.zeklin.modules.KafkaProducerModule
+import fs2.kafka.KafkaProducer
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.http4s.HttpApp
 import org.http4s.server.Router
@@ -33,7 +35,7 @@ object Server extends App {
   import zio.interop.catz._
   implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij removes `pureconfig.generic.auto._` import...
 
-  type AppEnvironment = Environment with DoobieAccountRepository with Github
+  type AppEnvironment = Environment with DoobieAccountRepository with Github with KafkaProducerModule
   type AppTask[A]     = RIO[AppEnvironment, A]
 
   private final def router[R <: AppEnvironment](implicit blocker: Blocker) =
@@ -57,6 +59,9 @@ object Server extends App {
                                       .flatMap(_.blocking.blockingExecutor)
                                       .map(_.asEC)
                                       .map(Blocker.liftExecutionContext)
+      kafkaProducerR <- ZIO.runtime[Environment].map { implicit rts =>
+                         config.makeKafkaProducer("0.0.0.0:9092")
+                       }
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blocker)
       httpClientR <- ZIO.runtime[Environment].map { implicit rts =>
                       config.makeHttpClient(Platform.executor.asEC)
@@ -69,11 +74,11 @@ object Server extends App {
           .compile[AppTask, AppTask, ExitCode]
           .drain
       }
-      program <- (httpClientR <*> transactorR).use {
-                  case (httpClient, transactor) =>
+      program <- (httpClientR <*> transactorR <*> kafkaProducerR).use {
+                  case ((httpClient, transactor), producer) =>
                     server.provideSome[Environment] { base =>
                       new Clock with Console with System with Random with Blocking with DoobieAccountRepository
-                      with Github {
+                      with Github with KafkaProducerModule {
                         override protected val xa: doobie.Transactor[Task] = transactor
 
                         override val clock: Clock.Service[Any]       = base.clock
@@ -83,6 +88,11 @@ object Server extends App {
                         override val blocking: Blocking.Service[Any] = base.blocking
                         override val github: Github.Service[Clock] =
                           new GithubLive(httpClient, cfg.github).github
+
+                        override val kafkaProducer: KafkaProducerModule.Service[Any] =
+                          new KafkaProducerModule.Service[Any] {
+                            override val instance: KafkaProducer[Task, String, String] = producer
+                          }
                       }
                     }
                 }
