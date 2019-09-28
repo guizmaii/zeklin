@@ -186,6 +186,73 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
 
 The body of these events seems to be identical.
 
+#### Github App - Go from "some repo only" to "all repos"
+
+These events are triggered when the user choose to change the access rights of the App to its repo, 
+from some of his repos to all his repos.
+
+  - First one, `x-github-event: installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: installation_repositories, 
+        x-github-delivery: 41122dd0-e1c8-11e9-8370-d08b4aab4423, 
+        x-hub-signature: sha1=8d731c92907298d9468a1355e268f74ca6bfa2f9, 
+        x-request-id: 5658b2c9-8a8a-4787-a421-d542f78d2e65, 
+        x-forwarded-for: 192.30.252.88, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569658582904, 
+        total-route-time: 0, 
+        content-length: 20108, 
+        timestamp: 1569658582906
+    )
+    body=""  /* See event_installation_repositories_from_some_to_all.json file */
+```
+
+  - Second one, `x-github-event: integration_installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation_repositories, 
+        x-github-delivery: 41122dd0-e1c8-11e9-97d0-17830efb127d, 
+        x-hub-signature: sha1=11cb3f39afe3ce979a4b286e2284be92e0ee6b51, 
+        x-request-id: 568a5249-d0bf-45b6-af5f-1a7d1064f741, 
+        x-forwarded-for: 192.30.252.98, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 1, 
+        x-request-start: 1569658582918, 
+        total-route-time: 0, 
+        content-length: 20103, 
+        timestamp: 1569658582923
+    )
+    body=""  /* See event_integration_installation_repositories_from_some_to_all.json file */
+```
+
+Only difference between their body:
+In the `installation_repositories` event the `"repository_selection"` is set to `"selected"`
+while in the `integration_installation_repositories` event, it's set to `"all"`
+
+TODO: Find Why?
+
 #### Git commit events
 
 These `check_suite` events seems to happen when there's a commit.
