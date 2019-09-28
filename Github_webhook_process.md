@@ -29,7 +29,7 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2550, 
         timestamp: 1569632142646
     ) 
-    body=""  /* See event_installation.json file */
+    body=""  /* See event_installation_app_install.json file */
 ```
 
   - One with `x-github-event: integration_installation` header
@@ -57,10 +57,72 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
         content-length: 2533, 
         timestamp: 1569632142743
     ) 
-    body=""  /* See event_integration_installation.json file */
+    body=""  /* See event_integration_installation_app_install.json file */
 ```
 
 The only difference between their body is the `"requester": null,` present in the `x-github-event: installation` event.
+
+#### Github App - App deletion (uninstall)
+
+At app deletion (uninstall), you'll receive these 2 webhooks:
+
+  - One with `x-github-event: installation` header
+
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: installation, 
+        x-github-delivery: eb2f4e8a-e1cb-11e9-9753-077501bcd535, 
+        x-hub-signature: sha1=fc4abef36b74665a7747178439d536ce4010d846, 
+        x-request-id: 35bcbf2d-7cb2-4946-b1e0-224e96e9ef9e, 
+        x-forwarded-for: 140.82.115.245, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569660155444, 
+        total-route-time: 0, 
+        content-length: 2424, 
+        timestamp: 1569660155446
+    )
+    body=""  /* See event_installation_app_deleted.json file */
+```
+
+  - One with `x-github-event: integration_installation` header
+
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation, 
+        x-github-delivery: eb2820a6-e1cb-11e9-970b-55d49d32657b, 
+        x-hub-signature: sha1=fc4abef36b74665a7747178439d536ce4010d846, 
+        x-request-id: eadc09bf-f364-4fc1-aec3-0c5495d06474, 
+        x-forwarded-for: 192.30.252.88, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 1, 
+        x-request-start: 1569660155436, 
+        total-route-time: 0, 
+        content-length: 2424, 
+        timestamp: 1569660155438
+    )
+    body=""  /* See event_integration_installation_app_deleted.json file */
+```
+
+The events body are identical.
 
 #### Github App - Add a repo to the App
 
