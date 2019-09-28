@@ -1,6 +1,6 @@
 # Github App Webhooks
 
-#### App installation
+#### Github App - installation events
 
 At app Installation, you'll receive these 2 webhooks:
 
@@ -62,7 +62,69 @@ INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook
 
 The only difference between their body is the `"requester": null,` present in the `x-github-event: installation` event.
 
-#### Random event ?
+#### Github App - add a repo to the App events
+
+These events are triggered when a repo is added to the Github App.
+
+  - First one, `x-github-event: installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: installation_repositories, 
+        x-github-delivery: 70c757b0-e1c5-11e9-90d9-db311bf2cb9d, 
+        x-hub-signature: sha1=5e7ddd83a40cbadd0417493c5e322dcb14a06b39, 
+        x-request-id: 75971a0f-a569-41b8-9a14-42d7e992c411, 
+        x-forwarded-for: 140.82.115.248, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569657373160, 
+        total-route-time: 0, 
+        content-length: 2635, 
+        timestamp: 1569657373162
+    ) 
+    body=""  /* See event_installation_repositories.json file */
+```
+
+  - Second one, `x-github-event: integration_installation_repositories` event
+  
+```
+INFO  o.h.s.m.Logger - HTTP/1.1 POST /webhook 
+    Headers(
+        host: smee.io, 
+        Accept-Encoding: gzip, deflate, 
+        user-agent: GitHub-Hookshot/3afdf3c, 
+        content-type: application/json, 
+        connection: close, 
+        accept: */*, 
+        x-github-event: integration_installation_repositories, 
+        x-github-delivery: 70c757b0-e1c5-11e9-9210-0d99602bc205, 
+        x-hub-signature: sha1=5e7ddd83a40cbadd0417493c5e322dcb14a06b39, 
+        x-request-id: a9e29ff5-f2bb-4cb1-9db6-f5085b8c1b57, 
+        x-forwarded-for: 192.30.252.97, 
+        x-forwarded-proto: https, 
+        x-forwarded-port: 443, 
+        via: 1.1 vegur, 
+        connect-time: 0, 
+        x-request-start: 1569657373091, 
+        total-route-time: 0, 
+        content-length: 2635, 
+        timestamp: 1569657373094
+    ) 
+    body=""  /* See event_integration_installation_repositories.json file */
+```
+
+The body of these events seems to be identical.
+
+#### Git commit events
 
 These `check_suite` events seems to happen when there's a commit.
 
