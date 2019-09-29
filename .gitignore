@@ -76,3 +76,5 @@ project/plugins/project/
 .cache
 .lib/
 /.idea/
+**.pem
+secrets.conf

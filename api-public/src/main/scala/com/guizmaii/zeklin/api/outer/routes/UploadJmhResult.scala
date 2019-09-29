@@ -3,13 +3,13 @@ package com.guizmaii.zeklin.api.outer.routes
 import com.guizmaii.zeklin.jmh.json.JmhJsonResultAST.JmhResultAST
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import zio.TaskR
+import zio.RIO
 
 final class UploadJmhResult[R] {
   import org.http4s.circe.CirceEntityCodec._
   import zio.interop.catz._
 
-  type Task[A] = TaskR[R, A]
+  type Task[A] = RIO[R, A]
 
   val dsl: Http4sDsl[Task] = Http4sDsl[Task]
   import dsl._

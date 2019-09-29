@@ -59,7 +59,7 @@ object JmhJsonResultAST {
   )
 
   object Params {
-    implicit final val decoder: Decoder[Params] = deriveDecoder[Params]
+    implicit final val decoder: Decoder[Params] = deriveDecoder
   }
 
   object Score {
@@ -103,7 +103,7 @@ object JmhJsonResultAST {
   }
 
   object JmhResultAST {
-    implicit final val decoder: Decoder[JmhResultAST] = deriveDecoder[JmhResultAST]
+    implicit final val decoder: Decoder[JmhResultAST] = deriveDecoder
   }
 }
 
