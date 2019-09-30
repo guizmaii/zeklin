@@ -1,5 +1,4 @@
-import sbt.Keys.libraryDependencies
-import sbtcrossproject.CrossPlugin.autoImport.{ crossProject, CrossType }
+import CustomTasks._
 
 ThisBuild / organization := "com.guizmaii"
 ThisBuild / scalaVersion := "2.12.10"
@@ -16,6 +15,7 @@ lazy val squants            = "org.typelevel"         %% "squants"          % "1
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
 lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC13"
 lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC4"
+lazy val `zio-nio`          = "dev.zio"               %% "zio-nio"          % "0.1.3"
 lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
 lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.4"
@@ -86,7 +86,6 @@ lazy val commonSettings =
 lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
-    .settings(noPublishSettings: _*)
     .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, github, frontend, `test-kit`)
     .dependsOn(core, `json-parser`, server, `api-public`, `api-private`, accounts, github, frontend, `test-kit`)
 
@@ -101,26 +100,12 @@ lazy val server =
   project
     .settings(moduleName := s"$projectName-api-server")
     .settings(commonSettings: _*)
+    .settings(mainClass in reStart := Some("com.guizmaii.zeklin.api.Server"))
     .settings(
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(logback) ++ http4s
     )
-    .settings(
-      mainClass in reStart := Some("com.guizmaii.zeklin.api.Server"),
-      // Allows to read the generated JS on client
-      resources in Compile += (fastOptJS in (frontend, Compile)).value.data,
-      // Lets the backend to read the .map file for js
-      resources in Compile += (fastOptJS in (frontend, Compile)).value
-        .map((x: sbt.File) => new File(x.getAbsolutePath + ".map"))
-        .data,
-      // Lets the server read the jsdeps file
-      (managedResources in Compile) += (artifactPath in (frontend, Compile, packageJSDependencies)).value,
-      // do a fastOptJS on reStart
-      reStart := (reStart dependsOn (fastOptJS in (frontend, Compile))).evaluated,
-      // This settings makes reStart to rebuild if a scala.js file changes on the client
-      watchSources ++= (watchSources in frontend).value
-    )
-    .dependsOn(modules, `api-public`, `api-private`, frontend, sharedJvm)
+    .dependsOn(modules, `api-public`, `api-private`, github, frontend)
     .dependsOn(`test-kit` % Test)
 
 lazy val `api-public` =
@@ -158,6 +143,7 @@ lazy val github =
       //scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings"),
       libraryDependencies ++= Seq(`jwt-circe`) ++ http4s ++ circe
     )
+    .dependsOn(modules)
 
 lazy val modules =
   project
@@ -176,48 +162,69 @@ lazy val `json-parser` =
 lazy val `test-kit` =
   project
     .settings(moduleName := s"$projectName-test-kit")
-    .settings(noPublishSettings: _*)
     .settings(commonSettings: _*)
 
 lazy val frontend =
   project
-    .enablePlugins(ScalaJSPlugin)
     .settings(moduleName := s"$projectName-frontend")
-    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSBundlerPlugin)
     .settings(
+      resolvers += "jitpack" at "https://jitpack.io",
       libraryDependencies ++= Seq(
-        "org.passay"   % "passay"        % "1.5.0",
-        "org.scala-js" %%% "scalajs-dom" % "0.9.7",
-      ) ++ http4s
+        "com.github.OutWatch.outwatch" %%% "outwatch"  % "b07808cb12",
+        "org.scalatest"                %%% "scalatest" % "3.0.8" % Test
+      )
     )
-    .settings(
-      // Build a js dependencies file
-      skip in packageJSDependencies := false,
-      jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
-      // Put the jsdeps file on a place reachable for the server
-      crossTarget in (Compile, packageJSDependencies) := (resourceManaged in Compile).value
-    )
-    .dependsOn(modules, sharedJs, github)
+    .settings {
+      npmDependencies in Compile += "bulma" -> "0.7.5"
 
-lazy val shared =
-  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("shared"))
-    .settings(commonSettings: _*)
-    .settings(
-      libraryDependencies ++= Seq(
-        "com.lihaoyi" %%% "scalatags" % "0.7.0"
-      ) ++ circe
-    )
+      scalacOptions += "-P:scalajs:sjsDefinedByDefault"
+      useYarn := true // makes scalajs-bundler use yarn instead of npm
+      requireJsDomEnv in Test := true
+      scalaJSUseMainModuleInitializer := true
+      scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)) // configure Scala.js to emit a JavaScript module instead of a top-level script
 
-lazy val sharedJvm = shared.jvm
-lazy val sharedJs  = shared.js
+      scalacOptions ++=
+        "-encoding" :: "UTF-8" ::
+          "-unchecked" ::
+          "-deprecation" ::
+          "-explaintypes" ::
+          "-feature" ::
+          "-language:_" ::
+          "-Xfuture" ::
+          "-Xlint" ::
+          "-Ypartial-unification" ::
+          "-Yno-adapted-args" ::
+          "-Ywarn-extra-implicit" ::
+          "-Ywarn-infer-any" ::
+          "-Ywarn-value-discard" ::
+          "-Ywarn-nullary-override" ::
+          "-Ywarn-nullary-unit" ::
+          Nil
 
-// ### Others ###
+      version in webpack := "4.41.0"
+      version in startWebpackDevServer := "3.8.1"
+      webpackDevServerExtraArgs := Seq("--progress", "--color")
+      webpackDevServerPort := 8080
+      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "outwatch" / "webpack.config.dev.js")
 
-/**
- * Copied from Cats
- */
-lazy val noPublishSettings = Seq(
-  publish := {},
-  publishLocal := {},
-  publishArtifact := false
-)
+      // https://scalacenter.github.io/scalajs-bundler/cookbook.html#performance
+      webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly()
+
+      // when running the "dev" alias, after every fastOptJS compile all artifacts are copied into
+      // a folder which is served and watched by the webpack devserver.
+      // this is a workaround for: https://github.com/scalacenter/scalajs-bundler/issues/180
+      copyFastOptJS := {
+        val inDir  = (crossTarget in (Compile, fastOptJS)).value
+        val outDir = (crossTarget in (Compile, fastOptJS)).value / "dev"
+        val files =
+          Seq(name.value.toLowerCase + "-fastopt-loader.js", name.value.toLowerCase + "-fastopt.js")
+            .map(p => (inDir / p, outDir / p))
+        IO.copy(files, overwrite = true, preserveLastModified = true, preserveExecutable = true)
+      }
+    }
+
+// hot reloading configuration:
+// https://github.com/scalacenter/scalajs-bundler/issues/180
+addCommandAlias("dev", "; compile; fastOptJS::startWebpackDevServer; devwatch; fastOptJS::stopWebpackDevServer")
+addCommandAlias("devwatch", "~; fastOptJS; copyFastOptJS")

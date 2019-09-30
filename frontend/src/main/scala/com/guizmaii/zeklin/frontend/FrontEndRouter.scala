@@ -1,33 +1,17 @@
 package com.guizmaii.zeklin.frontend
 
-import java.net.URL
-
-import cats.data._
-import cats.effect.Blocker
-import com.guizmaii.zeklin.github.Github
-import io.circe.Json
-import org.http4s.CacheDirective._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
-import org.http4s.{ Charset, HttpRoutes, MediaType, StaticFile }
-import scalatags.Text.TypedTag
-import scalatags.Text.all.Modifier
-import zio.RIO
-
 object FrontEndRouter {
-
-  private[FrontEndRouter] final val supportedStaticExtensions = List(".html", ".js", ".map", ".css", ".png", ".ico")
-  private[FrontEndRouter] final val cacheControlHeader        = `Cache-Control`(NonEmptyList.of(`no-cache`()))
 
   private[FrontEndRouter] val jsScript = "zeklin-frontend-fastopt.js"
   private[FrontEndRouter] val jsDeps   = "zeklin-frontend-jsdeps.js"
 
+  /*
+
+
   /**
-   * https://getbootstrap.com/docs/4.3/components/navbar/#nav
-   */
+ * https://getbootstrap.com/docs/4.3/components/navbar/#nav
+ */
   private[FrontEndRouter] final val navbar = {
-    import scalatags.Text.all._
-    import scalatags.Text.tags2
 
     tags2.nav(
       cls := "navbar is-white is-spaced",
@@ -69,10 +53,7 @@ object FrontEndRouter {
     bodyContent: Seq[Modifier],
     scripts: Seq[Modifier],
     cssComps: Seq[Modifier]
-  ): TypedTag[String] = {
-    import scalatags.Text.all._
-    import scalatags.Text.tags2
-
+  ): TypedTag[String] =
     html(
       head(
         meta(charset := "utf-8"),
@@ -100,27 +81,19 @@ object FrontEndRouter {
         ) ++ scripts
       )
     )
-  }
 
 }
 
 final class FrontEndRouter[R <: Github](blocker: Blocker) {
   import FrontEndRouter._
-  import cats.implicits._
-  import org.http4s.circe._
-  import zio.interop.catz._
 
   type Task[A] = RIO[R, A]
 
   private val dsl: Http4sDsl[Task] = Http4sDsl[Task]
-  import dsl._
-
-  private def getResource(pathInfo: String): Task[URL] = RIO(getClass.getResource(pathInfo))
 
   private val index: List[TypedTag[String]] = List.empty
 
-  private def loginButton: List[TypedTag[String]] = {
-    import scalatags.Text.all._
+  private def loginButton: List[TypedTag[String]] =
     List(
       div(
         cls := "columns is-mobile is-centered",
@@ -147,7 +120,6 @@ final class FrontEndRouter[R <: Github](blocker: Blocker) {
         )
       )
     )
-  }
 
   final val routes: HttpRoutes[Task] =
     HttpRoutes.of[Task] {
@@ -173,4 +145,6 @@ final class FrontEndRouter[R <: Github](blocker: Blocker) {
       case GET -> Root / "hello" / name =>
         Ok(Json.obj("message" -> Json.fromString(s"Hello, $name")))
     }
+
+ */
 }

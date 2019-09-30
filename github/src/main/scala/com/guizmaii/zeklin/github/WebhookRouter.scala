@@ -1,7 +1,6 @@
-package com.guizmaii.zeklin.frontend
+package com.guizmaii.zeklin.github
 
 import cats.data.{ Kleisli, OptionT }
-import com.guizmaii.zeklin.github.Github
 import com.guizmaii.zeklin.modules.KafkaProducerModule
 import fs2.kafka.{ ProducerRecord, ProducerRecords }
 import io.circe.{ Json, Printer }

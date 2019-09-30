@@ -1,7 +1,6 @@
-package com.guizlaii.zeklin.frontend
+package com.guizmaii.zeklin.github.installation_event
 
-import com.guizmaii.zeklin.frontend.WebhookRouter
-import com.guizmaii.zeklin.github.Github
+import com.guizmaii.zeklin.github.{ Github, WebhookRouter }
 import com.guizmaii.zeklin.modules.KafkaProducerModule
 import org.http4s._
 import org.scalatest.{ FreeSpec, Matchers }

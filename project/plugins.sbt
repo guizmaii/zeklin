@@ -6,6 +6,6 @@ addSbtPlugin("pl.project13.scala"        % "sbt-jmh"       % "0.3.7")
 addSbtPlugin("org.scoverage"             % "sbt-scoverage" % "1.6.0")
 addSbtPlugin("io.spray"                  % "sbt-revolver"  % "0.9.1")
 
-// Allows Scala.js Compilation
-addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "0.6.29")
-addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.6.1")
+// Scala.js
+addSbtPlugin("org.scala-js"  % "sbt-scalajs"         % "0.6.29")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.15.0-0.6")

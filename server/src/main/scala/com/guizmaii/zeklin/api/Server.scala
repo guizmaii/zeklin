@@ -7,8 +7,7 @@ import com.guizmaii.zeklin.accounts.DoobieAccountRepository
 import com.guizmaii.zeklin.api.config.Config
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
-import com.guizmaii.zeklin.frontend.{ FrontEndRouter, WebhookRouter }
-import com.guizmaii.zeklin.github.{ Github, GithubLive }
+import com.guizmaii.zeklin.github.{ Github, GithubLive, WebhookRouter }
 import com.guizmaii.zeklin.modules.KafkaProducerModule
 import fs2.kafka.KafkaProducer
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -16,12 +15,12 @@ import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import pureconfig.{ ConfigReader, ConfigSource, Exported }
-import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.console.{ putStrLn, Console }
 import zio.random.Random
 import zio.system.System
+import zio.{ RIO, _ }
 
 /**
  * Inspired by:
@@ -29,6 +28,7 @@ import zio.system.System
  *   - https://github.com/mschuwalow/zio-todo-backend/blob/develop/app/src/main/scala/com/schuwalow/zio/todo/Main.scala
  */
 object Server extends App {
+
   import org.http4s.implicits._
   import org.http4s.server.middleware._
   import pureconfig.generic.auto._
@@ -40,7 +40,7 @@ object Server extends App {
 
   private final def router[R <: AppEnvironment](implicit blocker: Blocker) =
     Router(
-      "/"        -> new FrontEndRouter[R](blocker).routes,
+      "/"        -> new FrontendRouter[R](blocker).routes,
       "/webhook" -> new WebhookRouter[R].routes,
       "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
       "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
