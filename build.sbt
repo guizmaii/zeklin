@@ -12,7 +12,6 @@ lazy val squants            = "org.typelevel"         %% "squants"          % "1
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
 lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC13"
 lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC4"
-lazy val `zio-nio`          = "dev.zio"               %% "zio-nio"          % "0.1.3"
 lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0"
 lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
 lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.4"
@@ -115,7 +114,7 @@ lazy val server =
     .settings(
       // https://scalacenter.github.io/scalajs-bundler/getting-started.html#sbt-web
       scalaJSProjects := Seq(frontend),
-      scalaJSPipeline / devCommands ++= Seq("~reStart", "~compile", "~test:compile"),
+      scalaJSPipeline / devCommands ++= Seq("~reStart", "~compile", "~test:compile", "set", "session", "*/*:dumpStructureTo"),
       Assets / pipelineStages := Seq(scalaJSPipeline),
       Assets / WebKeys.packagePrefix := "public/",
       Assets / WebKeys.exportedMappings := (
