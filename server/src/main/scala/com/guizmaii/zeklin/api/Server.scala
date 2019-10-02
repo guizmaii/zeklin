@@ -66,7 +66,6 @@ object Server extends App {
       _   <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
       cfg <- ZIO.fromEither(ConfigSource.default.load[Config])
       _   <- console.putStrLn(s"========= ENV: ${cfg.env} ===========")
-      _   <- console.putStrLn(s"========= classPath: ${this.getClass.getResource("").getPath} ==========")
       implicit0(e: Env) <- (cfg.env match {
                             case "production" | "staging" => Env.Prod
                             case "dev"                    => Env.Dev
