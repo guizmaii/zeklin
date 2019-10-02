@@ -82,6 +82,7 @@ lazy val commonSettings =
 lazy val root =
   Project(id = projectName, base = file("."))
     .settings(moduleName := "root")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .aggregate(core, `json-parser`, server, `api-public`, `api-private`, accounts, github, frontend, `test-kit`)
@@ -90,6 +91,7 @@ lazy val root =
 lazy val core =
   project
     .settings(moduleName := projectName)
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(
@@ -98,10 +100,10 @@ lazy val core =
 
 lazy val server =
   project
+    .settings(moduleName := s"$projectName-server")
     .enablePlugins(WebScalaJSBundlerPlugin, SbtWeb)
     .enablePlugins(JavaAppPackaging, BuildEnvPlugin)
     .settings(noDoc: _*)
-    .settings(moduleName := s"$projectName-server")
     .settings(
       reStart / mainClass := Some("com.guizmaii.zeklin.api.Server"),
       Revolver.enableDebugging()
@@ -128,8 +130,9 @@ lazy val server =
 
 lazy val frontend =
   project
-    .enablePlugins(ScalaJSBundlerPlugin)
     .settings(moduleName := s"$projectName-frontend")
+    .enablePlugins(ScalaJSBundlerPlugin)
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(
@@ -154,6 +157,7 @@ lazy val frontend =
 lazy val `api-public` =
   project
     .settings(moduleName := s"$projectName-api-outer")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -166,6 +170,7 @@ lazy val `api-public` =
 lazy val `api-private` =
   project
     .settings(moduleName := s"$projectName-api-inner")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -179,6 +184,7 @@ lazy val `api-private` =
 lazy val accounts =
   project
     .settings(moduleName := s"$projectName-accounts")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -186,6 +192,7 @@ lazy val accounts =
 lazy val github =
   project
     .settings(moduleName := s"$projectName-github")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -198,6 +205,7 @@ lazy val github =
 lazy val modules =
   project
     .settings(moduleName := s"$projectName-modules")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -205,6 +213,7 @@ lazy val modules =
 lazy val `json-parser` =
   project
     .settings(moduleName := s"$projectName-json-parser")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
@@ -216,6 +225,7 @@ lazy val `json-parser` =
 lazy val `test-kit` =
   project
     .settings(moduleName := s"$projectName-test-kit")
+    .disablePlugins(RevolverPlugin)
     .settings(noMain: _*)
     .settings(noDoc: _*)
     .settings(commonSettings: _*)
