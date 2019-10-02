@@ -121,9 +121,7 @@ lazy val server =
         for ((file, path) <- (Assets / mappings).value)
           yield file -> ((Assets / WebKeys.packagePrefix).value + path)
       ),
-      (Runtime / managedClasspath) += (Assets / packageBin).value,
       Compile / compile := ((Compile / compile) dependsOn scalaJSPipeline).value,
-      unmanagedClasspath in (Compile, reStart) += target.value / "web" / "classes" / "main"
     )
     .dependsOn(modules, `api-public`, `api-private`, github)
     .dependsOn(`test-kit` % Test)
@@ -139,10 +137,10 @@ lazy val frontend =
       libraryDependencies ++= Seq(
         "com.github.OutWatch.outwatch" %%% "outwatch"  % "b07808cb12",
         "org.scalatest"                %%% "scalatest" % "3.0.8" % Test
-      )
+      ),
+      Compile / npmDependencies += "bulma" -> "0.7.5"
     )
     .settings(
-      Compile / npmDependencies += "bulma" -> "0.7.5",
       scalacOptions += "-P:scalajs:sjsDefinedByDefault",
       useYarn := true, // makes scalajs-bundler use yarn instead of npm
       Test / requireJsDomEnv := true,
