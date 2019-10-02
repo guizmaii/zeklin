@@ -16,7 +16,14 @@ import scala.concurrent.ExecutionContext
 
 object config {
 
-  final case class Config(dbConfig: DBConfig, github: GithubAppConfigs)
+  sealed trait Env extends Product with Serializable
+  object Env {
+    final case object Dev  extends Env
+    final case object Prod extends Env
+    final case object Test extends Env
+  }
+
+  final case class Config(env: String, dbConfig: DBConfig, github: GithubAppConfigs)
 
   final case class DBConfig(
     url: String,

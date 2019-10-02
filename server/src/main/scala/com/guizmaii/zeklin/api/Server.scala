@@ -2,16 +2,17 @@ package com.guizmaii.zeklin.api
 
 import java.security.Security
 
-import cats.effect.{ Blocker, ExitCode }
+import cats.data.Kleisli
+import cats.effect.{ Blocker, Concurrent, ExitCode }
 import com.guizmaii.zeklin.accounts.DoobieAccountRepository
-import com.guizmaii.zeklin.api.config.Config
+import com.guizmaii.zeklin.api.config.{ Config, Env }
 import com.guizmaii.zeklin.api.inner.routes.AccountApi
 import com.guizmaii.zeklin.api.outer.routes.UploadJmhResult
 import com.guizmaii.zeklin.github.{ Github, GithubLive, WebhookRouter }
 import com.guizmaii.zeklin.modules.KafkaProducerModule
 import fs2.kafka.KafkaProducer
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.http4s.HttpApp
+import org.http4s._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import pureconfig.{ ConfigReader, ConfigSource, Exported }
@@ -28,7 +29,7 @@ import zio.{ RIO, _ }
  *   - https://github.com/mschuwalow/zio-todo-backend/blob/develop/app/src/main/scala/com/schuwalow/zio/todo/Main.scala
  */
 object Server extends App {
-
+  import cats.implicits._
   import org.http4s.implicits._
   import org.http4s.server.middleware._
   import pureconfig.generic.auto._
@@ -38,22 +39,40 @@ object Server extends App {
   type AppEnvironment = Environment with DoobieAccountRepository with Github with KafkaProducerModule
   type AppTask[A]     = RIO[AppEnvironment, A]
 
-  private final def router[R <: AppEnvironment](implicit blocker: Blocker) =
+  private def logged[F[_]: Concurrent](httpRoutes: HttpRoutes[F]): HttpRoutes[F] =
+    Logger.httpRoutes(logHeaders = true, logBody = true)(httpRoutes)
+
+  private final def router[R <: AppEnvironment](
+    implicit e: Env,
+    b: Blocker,
+    r: Runtime[R]
+  ): Kleisli[RIO[R, *], Request[RIO[R, *]], Response[RIO[R, *]]] =
     Router(
-      "/"        -> new FrontendRouter[R](blocker).routes,
-      "/webhook" -> new WebhookRouter[R].routes,
-      "/api"     -> new UploadJmhResult[R].routes, // TODO: middlewares(publicApiRoutes),
-      "/private" -> new AccountApi[R].routes // TODO: middlewares(privateApiRoutes)
+      "/"        -> new FrontendRouter[R].routes,
+      "/webhook" -> logged(new WebhookRouter[R].routes),
+      "/api"     -> logged(new UploadJmhResult[R].routes), // TODO: middlewares(publicApiRoutes),
+      "/private" -> logged(new AccountApi[R].routes) // TODO: middlewares(privateApiRoutes)
     ).orNotFound
 
-  private final def app[R <: AppEnvironment](implicit blocker: Blocker): HttpApp[AppTask] =
-    Logger.httpApp(logHeaders = true, logBody = true)(ResponseTiming[AppTask](router)) // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
+  // TODO 1OOO: Can we put this `ResponseTiming` in the Module#middlewares ??
+  private final def app[R <: AppEnvironment](
+    implicit e: Env,
+    b: Blocker,
+    r: Runtime[AppEnvironment]
+  ): HttpApp[AppTask] = ResponseTiming[AppTask](router)
 
   override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
     (for {
       _   <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
       cfg <- ZIO.fromEither(ConfigSource.default.load[Config])
-      _   <- config.initDb(cfg.dbConfig)
+      _   <- console.putStrLn(s"========= ENV: ${cfg.env} ===========")
+      _   <- console.putStrLn(s"========= classPath: ${this.getClass.getResource("").getPath} ==========")
+      implicit0(e: Env) <- (cfg.env match {
+                            case "production" | "staging" => Env.Prod
+                            case "dev"                    => Env.Dev
+                            case "test"                   => Env.Test
+                          }).pure[Task]
+      _ <- config.initDb(cfg.dbConfig)
       implicit0(blocker: Blocker) <- ZIO
                                       .environment[Blocking]
                                       .flatMap(_.blocking.blockingExecutor)

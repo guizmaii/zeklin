@@ -73,15 +73,16 @@ final class GithubLive(client: Client[Task], githubConfig: GithubAppConfigs) ext
   private def newRequest(uri: Uri): ZIO[Clock, Nothing, Request[Task]] =
     for {
       token <- newJwtToken
-    } yield Request[Task](
-      method = Method.POST,
-      uri = uri,
-      headers = Headers.of(
-        Authorization(Credentials.Token(AuthScheme.Bearer, token)),
-        `Content-Type`(MediaType.application.json),
-        Accept(githubAppMediaType)
+    } yield
+      Request[Task](
+        method = Method.POST,
+        uri = uri,
+        headers = Headers.of(
+          Authorization(Credentials.Token(AuthScheme.Bearer, token)),
+          `Content-Type`(MediaType.application.json),
+          Accept(githubAppMediaType)
+        )
       )
-    )
 
   override final val github =
     new Github.Service[Clock] {
