@@ -11,7 +11,7 @@ import zio.console.Console
 import zio.{ RIO, Runtime }
 
 object FrontendRouter {
-  private final val indexHeaders = Headers.of(`Content-Type`(MediaType.text.html, Charset.`UTF-8`))
+  private final val indexHeaders: Headers = Headers.of(`Content-Type`(MediaType.text.html, Charset.`UTF-8`))
 
   private final def scripts(env: Env): String =
     if (env == Env.Prod)
