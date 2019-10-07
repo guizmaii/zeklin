@@ -15,12 +15,12 @@ object FrontendRouter {
 
   private final def scripts(env: Env): String =
     if (env == Env.Prod)
-      """<script type="text/javascript" src="assets/zeklin-frontend-opt-bundle.js"></script>"""
+      """<script type="text/javascript" src="assets/frontend-opt-bundle.js"></script>"""
     else
       """
-        |<script type="text/javascript" src="assets/zeklin-frontend-fastopt-library.js"></script>
-        |<script type="text/javascript" src="assets/zeklin-frontend-fastopt-loader.js"></script>
-        |<script type="text/javascript" src="assets/zeklin-frontend-fastopt.js"></script>
+        |<script type="text/javascript" src="assets/frontend-fastopt-library.js"></script>
+        |<script type="text/javascript" src="assets/frontend-fastopt-loader.js"></script>
+        |<script type="text/javascript" src="assets/frontend-fastopt.js"></script>
         |""".stripMargin
 
   private final def html(env: Env): String =
