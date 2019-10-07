@@ -101,7 +101,7 @@ lazy val core =
 lazy val server =
   project
     .settings(moduleName := s"$projectName-server")
-    .enablePlugins(WebScalaJSBundlerPlugin, SbtWeb, JavaAppPackaging, BuildEnvPlugin)
+    .enablePlugins(WebScalaJSBundlerPlugin, JavaAppPackaging, BuildEnvPlugin)
     .settings(noDoc: _*)
     .settings(
       reStart / mainClass := Some("com.guizmaii.zeklin.api.Server"),
