@@ -25,3 +25,7 @@
  1. Read valid ZWE from `zeklin-github-webhook-event-valid`
  2. With a Kafka Stream (KTable), compute the current state
  3. Persist that current state in a KT `zeklin-github-installation-state` (properties: compacted, last forever)
+ 
+### 2. User login with Github Social Login
+
+Do it in the backend and just give the JWT token to the frontend ? in the cookie ("a la PlayFramework") ?
