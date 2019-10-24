@@ -22,6 +22,6 @@
 
 ### 1. Maintaining the "current state" of an installation
 
- 1. Receive valid ZWE
+ 1. Read valid ZWE from `zeklin-github-webhook-event-valid`
  2. With a Kafka Stream (KTable), compute the current state
  3. Persist that current state in a KT `zeklin-github-installation-state` (properties: compacted, last forever)
