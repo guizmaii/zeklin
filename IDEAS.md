@@ -34,7 +34,7 @@ As observed, there's at least two types of events:
 
  1. Read valid ZWE from `zeklin-github-app-installation-event`
  2. With a Kafka Stream (KTable), compute the current state
- 3. Persist that current state in a KT `zeklin-github-installation-state` (properties: compacted, last forever)
+ 3. Persist that current state in a KT `zeklin-github-app-installation-state` (properties: compacted, last forever)
  
 ### 3. User login with Github Social Login
 
