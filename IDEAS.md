@@ -2,9 +2,9 @@
 
 #### Jargon used in this document
 
- - Github Event         (GE)    : Message pushed in the system by the Github webhooks
- - Zeklin Webhook Event (ZWE)   : GE and the associated headers
- - Kafka Topic          (KT)    : A Kafka Topic
+ - **Github Event**         *(GE)*    : Message pushed in the system by the Github webhooks
+ - **Zeklin Webhook Event** *(ZWE)*   : GE and the associated headers
+ - **Kafka Topic**          *(KT)*    : A Kafka Topic
  
 ### 0. Authorizing Github Events
 
