@@ -27,8 +27,8 @@ As observed, there's at least two types of events:
   - Commit events ("event check" in the Github jargon apparently)
   
  1. Read valid ZWE from `zeklin-github-webhook-event-valid`
-    1. if App installation event: put it in `zeklin-github-app-installation-event`
-    2. if App installation event: put it in `zeklin-github-check-event`
+    1. if App installation event    : put it in `zeklin-github-app-installation-event`
+    2. if Github commit event       : put it in `zeklin-github-check-event`
     
 ### 2. Maintaining the "current state" of an installation
 
