@@ -10,14 +10,14 @@ lazy val projectName = "zeklin"
 
 lazy val squants            = "org.typelevel"         %% "squants"          % "1.5.0"
 lazy val logback            = "ch.qos.logback"        % "logback-classic"   % "1.2.3"
-lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC14"
-lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC5"
+lazy val zio                = "dev.zio"               %% "zio"              % "1.0.0-RC15"
+lazy val `zio-cats-interop` = "dev.zio"               %% "zio-interop-cats" % "2.0.0.0-RC6"
 lazy val `cats-effects`     = "org.typelevel"         %% "cats-effect"      % "2.0.0"
-lazy val h2                 = "com.h2database"        % "h2"                % "1.4.199"
-lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.4"
+lazy val h2                 = "com.h2database"        % "h2"                % "1.4.200"
+lazy val flyway             = "org.flywaydb"          % "flyway-core"       % "6.0.7"
 lazy val pureconfig         = "com.github.pureconfig" %% "pureconfig"       % "0.12.1"
 lazy val `jwt-circe`        = "com.pauldijou"         %% "jwt-circe"        % "4.1.0"
-lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.63"
+lazy val bouncycastle       = "org.bouncycastle"      % "bcprov-jdk15on"    % "1.64"
 lazy val `fs2-kafka`        = "com.ovoenergy"         %% "fs2-kafka"        % "0.20.1"
 
 lazy val doobie = (
@@ -39,7 +39,7 @@ lazy val circe = (
       "io.circe" %% "circe-optics"         % "0.12.0",
       "io.circe" %% "circe-literal"        % version % Test
     )
-)("0.12.2")
+)("0.12.3")
 
 lazy val http4s = (
   (version: String) =>
