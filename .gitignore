@@ -78,3 +78,4 @@ project/plugins/project/
 /.idea/
 **.pem
 secrets.conf
+yarn.lock
