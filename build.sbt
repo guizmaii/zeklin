@@ -39,7 +39,7 @@ lazy val circe = (
       "io.circe" %% "circe-optics"         % "0.12.0",
       "io.circe" %% "circe-literal"        % version % Test
     )
-)("0.12.1")
+)("0.12.2")
 
 lazy val http4s = (
   (version: String) =>
@@ -98,7 +98,7 @@ lazy val core =
 
 lazy val server =
   project
-    .enablePlugins(WebScalaJSBundlerPlugin, JavaAppPackaging, BuildEnvPlugin)
+    .enablePlugins(JavaAppPackaging, BuildEnvPlugin, SbtWeb)
     .settings(noDoc: _*)
     .settings(
       reStart / mainClass := Some("com.guizmaii.zeklin.api.Server"),
@@ -110,44 +110,22 @@ lazy val server =
       libraryDependencies ++= Seq(logback) ++ http4s
     )
     .settings(
-      // https://scalacenter.github.io/scalajs-bundler/getting-started.html#sbt-web
-      scalaJSProjects := Seq(frontend),
-      scalaJSPipeline / devCommands ++= Seq("~reStart", "~compile", "~test:compile", "set", "session", "*/*:dumpStructureTo"),
-      Assets / pipelineStages := Seq(scalaJSPipeline),
-      Assets / WebKeys.packagePrefix := "public/",
+      Assets / WebKeys.packagePrefix := "elm/",
       Assets / WebKeys.exportedMappings := (
         for ((file, path) <- (Assets / mappings).value)
           yield file -> ((Assets / WebKeys.packagePrefix).value + path)
-      ),
-      Compile / compile := ((Compile / compile) dependsOn scalaJSPipeline).value,
+        )
     )
-    .dependsOn(modules, `api-public`, `api-private`, github)
+    .dependsOn(modules, `api-public`, `api-private`, github, frontend)
     .dependsOn(`test-kit` % Test)
 
 lazy val frontend =
   project
-    .enablePlugins(ScalaJSBundlerPlugin)
     .disablePlugins(RevolverPlugin)
+    .enablePlugins(SbtElm)
     .settings(noMain: _*)
     .settings(noDoc: _*)
-    .settings(
-      resolvers += "jitpack" at "https://jitpack.io",
-      libraryDependencies ++= Seq(
-        "com.github.OutWatch.outwatch" %%% "outwatch"  % "b07808cb12",
-        "org.scalatest"                %%% "scalatest" % "3.0.8" % Test
-      ),
-      Compile / npmDependencies += "bulma" -> "0.7.5"
-    )
-    .settings(
-      scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-      useYarn := true, // makes scalajs-bundler use yarn instead of npm
-      Test / requireJsDomEnv := true,
-      scalaJSUseMainModuleInitializer := true,
-      fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
-      // configure Scala.js to emit a JavaScript module instead of a top-level script
-      scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-      emitSourceMaps := false,
-    )
+    .settings(Compile / compile := ((Compile / compile) dependsOn ElmKeys.elmMake).value)
 
 lazy val `api-public` =
   project
