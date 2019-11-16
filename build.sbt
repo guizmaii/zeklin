@@ -112,7 +112,14 @@ lazy val server =
     .settings(
       // https://scalacenter.github.io/scalajs-bundler/getting-started.html#sbt-web
       scalaJSProjects := Seq(frontend),
-      scalaJSPipeline / devCommands ++= Seq("~reStart", "~compile", "~test:compile", "set", "session", "*/*:dumpStructureTo"),
+      scalaJSPipeline / devCommands ++= Seq(
+        "~reStart",
+        "~compile",
+        "~test:compile",
+        "set",
+        "session",
+        "*/*:dumpStructureTo"
+      ),
       Assets / pipelineStages := Seq(scalaJSPipeline),
       Assets / WebKeys.packagePrefix := "public/",
       Assets / WebKeys.exportedMappings := (
