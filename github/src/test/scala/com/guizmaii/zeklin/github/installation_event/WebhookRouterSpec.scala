@@ -25,7 +25,7 @@ class WebhookRouterSpec extends FreeSpec with Matchers {
 
   private def run[T](task: ZIO[TestEnv, Throwable, T]): T =
     runtime.unsafeRun(
-      task.provideSome[DefaultRuntime#Environment](
+      task.provideSome(
         base =>
           new Console with Clock with Github with KafkaProducerModule {
             override val console: Console.Service[Any]                   = base.console

@@ -36,7 +36,7 @@ object Server extends App {
   import zio.interop.catz._
   implicitly[Exported[ConfigReader[Config]]] // ⚠️ Without, Intellij removes `pureconfig.generic.auto._` import...
 
-  type AppEnvironment = Environment with DoobieAccountRepository with Github with KafkaProducerModule
+  type AppEnvironment = ZEnv with DoobieAccountRepository with Github with KafkaProducerModule
   type AppTask[A]     = RIO[AppEnvironment, A]
 
   private def logged[F[_]: Concurrent](httpRoutes: HttpRoutes[F]): HttpRoutes[F] =
@@ -61,7 +61,7 @@ object Server extends App {
     r: Runtime[AppEnvironment]
   ): HttpApp[AppTask] = ResponseTiming[AppTask](router)
 
-  override def run(args: List[String]): ZIO[Environment, Nothing, Int] =
+  override def run(args: List[String]): ZIO[ZEnv, Nothing, Int] =
     (for {
       _   <- ZIO.effect(Security.addProvider(new BouncyCastleProvider())) // https://stackoverflow.com/a/18912362
       cfg <- ZIO.fromEither(ConfigSource.default.load[Config])
@@ -77,11 +77,11 @@ object Server extends App {
                                       .flatMap(_.blocking.blockingExecutor)
                                       .map(_.asEC)
                                       .map(Blocker.liftExecutionContext)
-      kafkaProducerR <- ZIO.runtime[Environment].map { implicit rts =>
+      kafkaProducerR <- ZIO.runtime[ZEnv].map { implicit rts =>
                          config.makeKafkaProducer("0.0.0.0:9092")
                        }
       transactorR = config.makeTransactor(cfg.dbConfig, Platform.executor.asEC, blocker)
-      httpClientR <- ZIO.runtime[Environment].map { implicit rts =>
+      httpClientR <- ZIO.runtime[ZEnv].map { implicit rts =>
                       config.makeHttpClient(Platform.executor.asEC)
                     }
       server = ZIO.runtime[AppEnvironment].flatMap { implicit rts =>
@@ -94,7 +94,7 @@ object Server extends App {
       }
       program <- (httpClientR <*> transactorR <*> kafkaProducerR).use {
                   case ((httpClient, transactor), producer) =>
-                    server.provideSome[Environment] { base =>
+                    server.provideSome[ZEnv] { base =>
                       new Clock with Console with System with Random with Blocking with DoobieAccountRepository
                       with Github with KafkaProducerModule {
                         override protected val xa: doobie.Transactor[Task] = transactor
